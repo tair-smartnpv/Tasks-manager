@@ -14,9 +14,9 @@
 <div class="header">
 
 	<div>
-		<a href="http://localhost/TasksManager/index.php/Projects">חזרה לרשימת פרויקטים</a>
+		<a href="http://localhost/TaskManager/index.php/projects">חזרה לרשימת פרויקטים</a>
 	<div>
-		<h1 class="title">ניהול משימות-<?= $project->name ?> </h1>
+		<h1 class="title">פרויקט: <?= $project->name ?> </h1>
 		
 	</div>
 	</div>
@@ -25,8 +25,8 @@
 	<p>הוספת משימה חדשה:</p><br>
 	<div id="error-box" class="text-danger mt-2"></div>
 
-	<label for='title-input'></label><input id='title-input'>
-	<button id='add-btn'>add task</button>
+	<input id='title-input'>
+	<button id='add-btn'>הוסף משימה</button>
 
 </div>
 <div id="tasks-list">

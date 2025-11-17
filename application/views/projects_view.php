@@ -69,7 +69,7 @@
             <h2>${project.name}</h2>
 				<p> ${project.description}</p>
 <div class = "project-btn">
- 		<a href='tasks/index/${project.id}' class='btn btn-primary'>Show tasks</a>
+ 		<a href='tasks/index/${project.id}' class='btn btn-primary'>משימות</a>
 <button class="delete-btn" data-id="${project.id}">מחק</button>
       </div>  </div></div>
     `;
