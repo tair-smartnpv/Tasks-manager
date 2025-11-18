@@ -51,7 +51,9 @@ class Tasks_model extends CI_Model
 		$this->db->update('tasks', ['status' => $status]);
 		return true;
 	}
-	public function delete_tasks_by_project($p_id){
+
+	public function delete_tasks_by_project($p_id)
+	{
 		$this->db->delete('tasks', array('project_id' => $p_id));
 		return true;
 	}
@@ -59,6 +61,4 @@ class Tasks_model extends CI_Model
 //public function get_project_name($p_id){
 //		$query = $this ->db->
 //}
-
-
 }

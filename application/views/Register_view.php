@@ -52,6 +52,7 @@ $(document).ready(function (){
 		$.ajax({
 			url: '<?php echo site_url("Register/register"); ?>',
 			type: 'POST',
+			dataType: 'json',
 			data: {
 				name: name,
 				email: email,
@@ -59,7 +60,9 @@ $(document).ready(function (){
 			},
 
 			success: function (response) {
-				console.log("post success", response.message);
+				console.log("post " , response.status, response.message);
+				window.location.href = "Login";
+
 			}
 
 

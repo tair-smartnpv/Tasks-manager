@@ -12,7 +12,10 @@
 <body>
 
 <div>
-<div class="jumboyron">
+<div class="jumboyron"><div>
+		<button id="logout">התנתקות</button>
+
+	</div>
 	<h1 class="display-4">הפרויקטים שלי</h1>
 	<h2 class ="lead">כל הפרויקטים</h2>
 	  <hr class="my-4">
@@ -21,6 +24,7 @@
 			הוסף פרויקט חדש
 		</button>
   </p>
+
 </div>
 
 
@@ -68,10 +72,10 @@
 	$(document).ready(function () {
 		// load all
 		$.ajax({
-			url: '<?php echo site_url("projects/get_projects"); ?>',
+			url: '<?php echo site_url("projects/get_projects_by_user"); ?>',
 			type: 'GET',
 			success: function (response) {
-				console.log("hello")
+				// console.log("hello")
 				let projects = JSON.parse(response)
 				for (let i = 0; i < projects.length; i++) {
 					$('#project-list').append(renderProject(projects[i]))
@@ -79,7 +83,7 @@
 
 			},
 			error: function () {
-				$('#project-list').html('<p>eror</p>');
+				$('#project-list').html('<p>error</p>');
 			}
 		});
 
@@ -88,8 +92,9 @@
 			const name = $('#name-input').val().trim();
 			const desc = $('#desc-input').val().trim();
 
+
 			$.ajax({
-				url: 'projects/add',
+				url: 'Projects/add',
 				type: 'POST',
 				dataType: 'json',
 				data: {
@@ -114,8 +119,9 @@
 
 
 				},
-				error: function () {
-					alert('error');
+				error: function (response) {
+					// alert('error');
+					console.log(response)
 				}
 			})
 
@@ -145,7 +151,19 @@
 			})
 		})
 
-
+		$('#logout').on("click", function(){
+			$.ajax({
+				url:'Login/logout',
+				method:'POST',
+				dataType:'json',
+				data:{
+					logout: 'logout'
+				},
+				success: function (response){
+					window.location.href = "Login";
+				}
+			})
+		})
 		$(document).on("click", ".modal_btn", function () {
 
 		})
