@@ -4,7 +4,7 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<?= base_url('assets/projectsStyle.css') ?>">
-	<title></title>
+	<title> projects page</title>
 
 
 </head>
@@ -25,17 +25,7 @@
 
 
 </div>
-<!-- <div class = "header">
-	<div class="title">
-		<h1>הפרויקטים שלי</h1>
-	</div>
-	<div class="adder">
-		
-	</div>
-</div> -->
-<!-- Modal -->
-<div class="modal fade" id="addProject" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-	 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal" id="addProject"  tabindex="1">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -45,7 +35,7 @@
 			<div class="modal-body">
 				<div id="error-box" class="text-danger mt-2"></div>
 				<label>שם פרויקט:</label><br>
-				<input type="text" id="name-input" required>
+				<input type="text" id="name-input" required><br>
 				<label>הוסף תיאור:</label><br>
 				<input type="text" id="desc-input">
 
@@ -64,14 +54,14 @@
 
 <script>
 	function renderProject(project) {
-		return `<div class = "card" >
+		return `
         <div class="project" id="project-${project.id}">
             <h2>${project.name}</h2>
 				<p> ${project.description}</p>
 <div class = "project-btn">
  		<a href='tasks/index/${project.id}' class='btn btn-primary'>משימות</a>
 <button class="delete-btn" data-id="${project.id}">מחק</button>
-      </div>  </div></div>
+      </div>  </div>
     `;
 	}
 
@@ -93,64 +83,68 @@
 			}
 		});
 
+		//add project
+		$(document).on("click", ".add-btn", function () {
+			const name = $('#name-input').val().trim();
+			const desc = $('#desc-input').val().trim();
+
+			$.ajax({
+				url: 'projects/add',
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					name: name,
+					description: desc
+				},
+				success: function (response) {
+					console.log(response);
+					if (response.status === "error"){
+						$("#error-box").html(response.message).show();
+						return;
+					}
+					if (response.status === "success"){
+						let project = response;
+						$('#project-list').append(renderProject(project))
+						console.log(`Created at ${new Date(project.created_at * 1000).toLocaleString()}`);
+						let modal = bootstrap.Modal.getInstance(document.getElementById('addProject'));
+
+						modal.hide();
+						$('#name-input').val('');
+						$('#desc-input').val('');}
+
+
+				},
+				error: function () {
+					alert('error');
+				}
+			})
+
+		})
+
 		$(document).on("click", ".delete-btn", function () {
 			const projectId = $(this).data('id');
 			const $projectDiv = $('#project-' + projectId);
-			if (!confirm('בטוחה שברצונך למחוק את הפרויקט הזה?')) return;
+			if (!confirm('בטוח שברצונך למחוק את הפרויקט הזה?')) return;
 
 			$.ajax({
-				url: 'projects/delete/' + projectId,
+				url: '<?php echo site_url("Projects/delete"); ?>',// + projectId,
 				method: 'POST',
-				// dataType:{id:id},
+				data:{id:projectId},
+				dataType: 'json',
 				success: function (response) {
 					console.log("deleted");
 
-					$projectDiv.fadeOut(300, function () {
+					$projectDiv.fadeIn("slow", function () {
 						$(this).remove();
 					})
+				},
+				error: function (){
+					alert("error")
 				}
 
 			})
 		})
 
-		$(document).on("click", ".add-btn", function () {
-			const name = $('#name-input').val().trim();
-			const desc = $('#desc-input').val().trim();
-
-				$.ajax({
-					url: 'projects/add',
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						name: name,
-						description: desc
-					},
-					success: function (response) {
-						console.log(response);
-						if (response.status === "error"){
-							// let res =JSON.parse(response)
-							$("#error-box").html(response.message).show();
-							// alert(response.message);
-							return;
-						}
-						if (response.status === "success"){
-							let project = response;
-							$('#project-list').append(renderProject(project))
-							console.log(`Created at ${new Date(project.created_at * 1000).toLocaleString()}`);
-							let modal = bootstrap.Modal.getInstance(document.getElementById('addProject'));
-
-						modal.hide();
-						 $('#name-input').val('');
-						 $('#desc-input').val('');}
-
-
-					},
-					error: function () {
-						alert('error');
-					}
-				})
-
-		})
 
 		$(document).on("click", ".modal_btn", function () {
 

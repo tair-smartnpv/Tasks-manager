@@ -16,11 +16,11 @@ class Tasks_model extends CI_Model
 	}
 
 
-	public function add_task($title, $status, $project_id, $created_at)
+	public function add_task($title, $task_status, $project_id, $created_at)
 	{
 		$data = [
 			'title' => $title,
-			'status' => $status,
+//			'status' => $task_status,
 			'project_id' => $project_id,
 			'created_at' => $created_at
 		];
@@ -34,6 +34,7 @@ class Tasks_model extends CI_Model
 	public function delete_task($id)
 	{
 		$this->db->delete('tasks', array('id' => $id));
+		return true;
 	}
 
 
@@ -47,7 +48,12 @@ class Tasks_model extends CI_Model
 	public function update_task($id, $status)
 	{
 		$this->db->where('id', $id);
-		return $this->db->update('tasks', ['status' => $status]);
+		$this->db->update('tasks', ['status' => $status]);
+		return true;
+	}
+	public function delete_tasks_by_project($p_id){
+		$this->db->delete('tasks', array('project_id' => $p_id));
+		return true;
 	}
 
 //public function get_project_name($p_id){

@@ -3,15 +3,19 @@
 /**
  * @property projects_model $projects_model
  * @property input $input
+ * @property  Tasks_model $Tasks_model;
  */
 class projects extends CI_Controller
 {
+
+
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->model('projects_model');
 		$this->load->helper('url');
+		$this->load->model('Tasks_model');
 
 
 	}
@@ -71,9 +75,13 @@ class projects extends CI_Controller
 
 	}
 
-	public function delete($id = null)
+	public function delete()
 	{
+		$id = $this->input->post('id');
 		$this->projects_model->delete_project($id);
+		$this->Tasks_model->delete_tasks_by_project($id);
+		echo json_encode(["status" => "success"]);
+
 
 	}
 

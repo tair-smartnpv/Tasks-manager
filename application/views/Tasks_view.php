@@ -3,8 +3,11 @@
 
 <head>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<?= base_url('assets/tasksStyle.css') ?>">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 
 	<style></style>
 </head>
@@ -15,13 +18,13 @@
 
 	<div>
 		<a href="http://localhost/TaskManager/index.php/projects">חזרה לרשימת פרויקטים</a>
-	<div>
-		<h1 class="title">פרויקט: <?= $project->name ?> </h1>
-		
-	</div>
+		<div>
+			<h1 class="title">פרויקט: <?= $project->name ?> </h1>
+
+		</div>
 	</div>
 </div>
-<div class = "adder">
+<div class="adder">
 	<p>הוספת משימה חדשה:</p><br>
 	<div id="error-box" class="text-danger mt-2"></div>
 
@@ -29,8 +32,8 @@
 	<button id='add-btn'>הוסף משימה</button>
 
 </div>
-<div id="tasks-list">
-</div>
+<ul id="tasks-list">
+</ul>
 
 
 <script>
@@ -38,18 +41,23 @@
 
 
 	function renderTasks(task) {
-		return `
+		return `<li >
         <div class="task" id="task-${task.id}">
-            <h1>${task.title}</h1>
+            <h3>${task.title}</h3>
 <div class = "task-controls">
 
 				<input type = "checkbox" class= "task-status" data-id = "${task.id}"   ${task.status === 'completed' ? "checked" : ""}>
 		<button class="delete-btn" data-id="${task.id}">מחק</button>
-        </div></div>
+        </div></div></li>
     `;
 	}
 
 	$(document).ready(function () {
+		$(function () {
+			$('#tasks-list').sortable();
+			$('#tasks-list').disableSelection();
+
+		})
 		//load all by id
 		$.ajax({
 			url: "<?php echo site_url('Tasks/get_by_project/'); ?>" + project_id,
@@ -69,33 +77,34 @@
 		$('#add-btn').on("click", function () {
 			const title = $('#title-input').val();
 			const p_id = project_id;
-		
-				$.ajax({
-					url: "<?php echo site_url('Tasks/add')?>",
-					method: 'POST',
-					dataType: 'json',
-					data: {
-						title: title,
-						p_id: p_id,
-						task_status: 'pending'
-					},
-					success: function (response) {
-						console.log(response);
-						if(response.status === "error"){
-							$("#error-box").html(response.message).show();
-							return;
-						}
-						if(response.status === "success"){
-							let task = response;
-							$('#tasks-list').append(renderTasks(task))
-							console.log(`Created at ${new Date(task.created_at * 1000).toLocaleString()}`);
-							$('#title-input').val('');
+
+			$.ajax({
+				url: "<?php echo site_url('Tasks/add')?>",
+				method: 'POST',
+				dataType: 'json',
+				data: {
+					title: title,
+					p_id: p_id,
+
+				},
+				success: function (response) {
+					console.log(response);
+					if (response.status === "error") {
+						$("#error-box").html(response.message).show();
+						return;
 					}
+					if (response.status === "success") {
+						let task = response;
+						$('#tasks-list').append(renderTasks(task))
+						console.log(`Created at ${new Date(task.created_at * 1000).toLocaleString()}`);
+						$('#title-input').val('');
+						console.log($("#task-" + task.id + " .task-status").data("id"));
 					}
+				}
 
 
-				})
-			
+			})
+
 		})
 
 
@@ -131,6 +140,7 @@
 				success: function (response) {
 					console.log("response:", response);
 					$("#task-" + taskId).toggleClass("completed", status);
+
 				}
 			})
 

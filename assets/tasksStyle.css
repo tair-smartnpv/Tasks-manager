@@ -21,6 +21,7 @@ display: flex;
 	padding: 10px;
  }
 
+
  #title-input{
 	width: 650px;
  }
@@ -29,8 +30,9 @@ display: flex;
 	border-radius: 10px;
 
  }
- .task-list{
-	width: 80%;
+ #tasks-list{
+	list-style-type: none;
+	 width: 80%;
  }
  .task {
     direction: rtl;                 /* מימין לשמאל */
@@ -44,4 +46,13 @@ display: flex;
     justify-content: space-between; /* כותרת מצד ימין, כפתורים מצד שמאל */
     align-items: center;
 }
+ .task.completed h3{
+	 text-decoration: line-through;
+	 color:  gray;
+ }
+ .delete-btn{
+	 color: darkred;
+	 border: 2px solid darkred ;
+	 border-radius: 5px;
+ }
 

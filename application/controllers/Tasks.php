@@ -56,11 +56,12 @@ class Tasks extends CI_Controller
 		$id = $this->Tasks_model->add_task($title,$task_status,$project_id,$created_at);
 
 		echo json_encode([
+			'status'=> 'success',
 			'title' => $title,
 			'created_at' => $created_at,
 			'task_status' => $task_status,
 			'project_id' => $project_id,
-			'task_id'=> $id
+			'id'=> $id
 		]);
 	}
 
@@ -77,8 +78,10 @@ class Tasks extends CI_Controller
 	public function update(){
 		$status = $this->input->post('status');
 		$id = $this->input->post('task_id');
-		$this->Tasks_model->update_task($id,$status);
-		echo json_encode(['success' => true]);
+		$res = $this->Tasks_model->update_task($id,$status);
+		if ($res) {
+			echo json_encode(['status' => 'success']);
+		}
 
 	}
 
