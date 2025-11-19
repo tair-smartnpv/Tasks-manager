@@ -13,8 +13,10 @@
 
 <div>
 <div class="jumboyron"><div>
+		<div class="user">
+			<label>שלום, <?php echo $username?> </label>
 		<button id="logout">התנתקות</button>
-
+	</div>
 	</div>
 	<h1 class="display-4">הפרויקטים שלי</h1>
 	<h2 class ="lead">כל הפרויקטים</h2>

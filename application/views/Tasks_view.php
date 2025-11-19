@@ -25,11 +25,13 @@
 	</div>
 </div>
 <div class="adder">
-	<p>הוספת משימה חדשה:</p><br>
+	<p>הוספת משימה חדשה:</p>
 	<div id="error-box" class="text-danger mt-2"></div>
 
 	<input id='title-input'>
+	<input type="date">
 	<button id='add-btn'>הוסף משימה</button>
+
 
 </div>
 <ul id="tasks-list">
@@ -44,6 +46,7 @@
 		return `<li >
         <div class="task" id="task-${task.id}">
             <h3>${task.title}</h3>
+<p>נוצר בתאריך: ${new Date(task.created_at * 1000).toLocaleDateString()}</p>
 <div class = "task-controls">
 
 				<input type = "checkbox" class= "task-status" data-id = "${task.id}"   ${task.status === 'completed' ? "checked" : ""}>

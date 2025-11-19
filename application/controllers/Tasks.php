@@ -38,10 +38,10 @@ class Tasks extends CI_Controller
 		$this->load->helper(array('url','form'));
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('title','Title','required|regex_match[/^[\p{L}\p{N}\s]+$/u]',
-	errors:[
+	array(
 		'required' =>'יש להזין שם למשימה',
 		'regex_match'=> 'תווים לא תקינים'
-	]);
+	));
 
 		
 
@@ -55,14 +55,14 @@ class Tasks extends CI_Controller
 		$project_id = $this->input->post('p_id');		
 		$id = $this->Tasks_model->add_task($title,$task_status,$project_id,$created_at);
 
-		echo json_encode([
+		echo json_encode(array(
 			'status'=> 'success',
 			'title' => $title,
 			'created_at' => $created_at,
 			'task_status' => $task_status,
 			'project_id' => $project_id,
 			'id'=> $id
-		]);
+		));
 	}
 
 	}
@@ -80,7 +80,7 @@ class Tasks extends CI_Controller
 		$id = $this->input->post('task_id');
 		$res = $this->Tasks_model->update_task($id,$status);
 		if ($res) {
-			echo json_encode(['status' => 'success']);
+			echo json_encode(array('status' => 'success'));
 		}
 
 	}

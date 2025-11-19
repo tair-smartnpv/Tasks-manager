@@ -12,33 +12,68 @@
 
 }
 
-.jumboyron{
-	padding : 100px;
+.jumboyron {
+	padding: 100px;
 	background-color: aliceblue;
 }
 
+
+.user {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+
+	display: flex;
+	align-items: center;
+	gap: 10px;
+
+	background: #f3fbfd;
+	padding: 8px 15px;
+	border-radius: 10px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	font-size: larger;
+	/*font-weight: bold;*/
+}
+
+/* כפתור התנתקות */
+#logout {
+	background: rgb(239, 239, 239);
+	color: #911919;
+	border: none;
+	padding: 6px 12px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: 0.1s;
+	font-size: smaller;
+
+}
+
+#logout:hover {
+	background: rgba(182, 182, 182, 0.56);
+}
+
 .modal-btn {
-    background-color: #006eff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-right: 300px; /* זז שמאלה */
-	    float: left;
+	background-color: #006eff;
+	color: white;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	margin-right: 300px; /* זז שמאלה */
+	float: left;
 
 }
 
 
-
-.project-list{
+.project-list {
 	padding: 50px 50px 50px 50px;
 	display: flex;
 	gap: 40px;
 	flex-wrap: wrap;
 
 }
-.project{
+
+.project {
 	width: 250px;
 	padding: 20px;
 	background: #f4f4f4;
@@ -67,10 +102,10 @@
 	gap: 50px;
 }
 
-.delete-btn{
- border-radius: 10px;
- border: 1px solid rgb(187, 51, 51);
- float: left;
- color: rgb(187, 51, 51);
+.delete-btn {
+	border-radius: 10px;
+	border: 1px solid rgb(187, 51, 51);
+	float: left;
+	color: rgb(187, 51, 51);
 
 }

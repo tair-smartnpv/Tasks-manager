@@ -14,5 +14,9 @@ class Register_model extends CI_Model {
 
 	}
 
+	public function check_email($email){
+		return $this->db->get_where('users', array('email' => $email))->num_rows()>0;
+	}
+
 
 }

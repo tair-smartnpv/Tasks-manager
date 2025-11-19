@@ -16,14 +16,19 @@ display: flex;
 	width: 60%;
 	/* height: 20px; */
 	margin : 40px ;
+
 	border: 1px solid rgb(149, 149, 150);
 	border-radius: 8px;
 	padding: 10px;
  }
+ .adder p{
+	 font-size: larger;
+ }
+
 
 
  #title-input{
-	width: 650px;
+	/*padding: 20px;*/
  }
  #add-btn{
 	border: 2px solid #000000;
@@ -46,10 +51,15 @@ display: flex;
     justify-content: space-between; /* כותרת מצד ימין, כפתורים מצד שמאל */
     align-items: center;
 }
+ .task h3{
+	 /*font-size: small;*/
+ }
  .task.completed h3{
 	 text-decoration: line-through;
 	 color:  gray;
  }
+
+
  .delete-btn{
 	 color: darkred;
 	 border: 2px solid darkred ;

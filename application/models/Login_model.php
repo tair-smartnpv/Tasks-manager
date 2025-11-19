@@ -4,24 +4,19 @@ class Login_model extends CI_Model {
 		$this->load->database();
 	}
 
-	public function login($email, $input_pass) {
-		$this->db->select('user_pass, user_id');
-		$this->db->where('email', $email);
-		$query = $this->db->get('users');
-		if ($query->num_rows() == 0) {
-			return json_encode(array('status' => 'fail', 'message' => 'User not found'));
-		}
-		$pass = $query->row()->user_pass;
+	public function login($email) {
 
-		if (password_verify($input_pass, $pass)) {
-			$id= $query->row()->user_id;
-			$this->db->where('user_id', $id);
-			$this->db->update('users', array('connect' => 'connected'));
-			return json_encode(array('status' => 'success','user_id' => $id));
-		}
-		else {
-			return json_encode(array('status' => 'error','message' => 'Wrong password'));
-		}
+
+		$this->db->select('user_id, username');
+		$this->db->where('email', $email);
+
+		$query = $this->db->get('users');
+		$id= $query->row()->user_id;
+		$name= $query->row()->username;
+		$this->db->where('user_id', $id);
+		$this->db->update('users', array('connect' => 'connected'));
+
+		return array('user_id' => $id, 'name' => $name);
 	}
 
 	public function logout($userId) {
@@ -29,4 +24,21 @@ class Login_model extends CI_Model {
 		$this->db->update('users', array('connect' => 'away'));
 		return true;
 	}
+
+	public function user_exists($email) {
+		return $this->db->get_where('users', array('email' => $email))->num_rows()==1;
+	}
+
+	public function correct_password($email, $password)
+	{
+		$hashes_pass = $this->db->get_where('users', array('email' => $email))->row()->user_pass;
+		if (password_verify($password, $hashes_pass)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
+	}
+
 }
