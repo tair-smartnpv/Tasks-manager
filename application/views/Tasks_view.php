@@ -24,33 +24,129 @@
 		</div>
 	</div>
 </div>
-<div class="adder">
-	<p>הוספת משימה חדשה:</p>
-	<div id="error-box" class="text-danger mt-2"></div>
+<!--<div class="adder">-->
+<!--	<p>הוספת משימה חדשה:</p>-->
+<!--	<div id="error-box" class="text-danger mt-2"></div>-->
+<!--	<label>שם משימה:</label>-->
+<!--	<label for='title-input'></label><input id='title-input'>-->
+<!--	<label>לתאריך:</label>-->
+<!--	<label for="deadline"></label><input type="date" id="deadline" min="--><?php //echo date('Y-m-d'); ?><!--" required>-->
+<!--	<button id='add-btn'>הוסף משימה</button>-->
+<!---->
+<!---->
+<!--</div>-->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-modal">
+	הוסף משימה
+</button>
+<div class="modal fade" id="add-modal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">הוספת משימה חדשה</h5>
+			</div>
+			<div class="modal-body">
+				<p>הוספת משימה חדשה:</p>
+				<div id="error-box" class="text-danger mt-2"></div>
+				<label>שם משימה:</label>
+				<label for='title-input'></label><input id='title-input'>
+				<label>לתאריך:</label>
+				<label for="deadline"></label><input type="date" id="deadline" min="<?php echo date('Y-m-d'); ?>"
+													 required>
+			</div>
+			<div class="modal-footer">
+				<button class='add-btn'>הוסף משימה</button>
+			</div>
+		</div>
+	</div>
+</div>
 
-	<input id='title-input'>
-	<input type="date">
-	<button id='add-btn'>הוסף משימה</button>
+<div class="modal fade" id="edit-modal">
+	<div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">עריכת משימה</h5>
+			</div>
+			<div class="modal-body">
+				<label>עריכת שם:</label>
+				<input id="title-update">
+				<label>עריכת תאריך:</label>
+				<input type="date" id="date-update" min="<?php echo date('Y-m-d'); ?>">
+			</div>
+			<div class="modal-footer">
+				<button id="edit-task">עדכן</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">בטוח שאתה רוצה למחוק?</h5>
+			</div>
 
+			<div class="modal-footer">
+				<button class="btn btn-danger" id="confirmDelete">מחק</button>
+				<button class="btn btn-secondary" data-bs-dismiss="modal">בטל</button>
+			</div>
+		</div>
+
+	</div>
 
 </div>
+
+
+<h3>משימות שלא עשיתי: </h3>
 <ul id="tasks-list">
 </ul>
+
+<h3>משימות שעשיתי:</h3>
+<ul id="completed-tasks"></ul>
 
 
 <script>
 	let project_id = "<?php echo $project_id; ?>";
 
+	function askConfirmation() {
+		return new Promise((resolve) => {
+
+			// פתיחת מודאל
+			$("#delete-modal").modal("show");
+
+			// לחיצה על אישור
+			$("#confirmDelete").one("click", function () {
+				$("#delete-modal").modal("hide");
+				resolve(true);
+			});
+
+			// לחיצה על ביטול
+			$("#cancelDelete").one("click", function () {
+				$("#delete-modal").modal("hide");
+				resolve(false);
+			});
+		});
+	}
 
 	function renderTasks(task) {
-		return `<li >
-        <div class="task" id="task-${task.id}">
-            <h3>${task.title}</h3>
-<p>נוצר בתאריך: ${new Date(task.created_at * 1000).toLocaleDateString()}</p>
-<div class = "task-controls">
+		let id = task.id;
+		let title = task.title;
+		let date = task.created_at;
+		let created_date = new Date(date * 1000).toISOString().split("T")[0]
+		let status = task.status;
+		let timestamp = task.deadline;
+		let deadline = new Date(timestamp * 1000).toISOString().split("T")[0];
 
-				<input type = "checkbox" class= "task-status" data-id = "${task.id}"   ${task.status === 'completed' ? "checked" : ""}>
-		<button class="delete-btn" data-id="${task.id}">מחק</button>
+		return `<li >
+        <div class="task" id="task-${id}">
+			<input type = "checkbox" class= "task-status" data-id = "${id}"   ${status === 'completed' ? "checked" : ""}>
+            <h3>${title}</h3>
+			<em>נוצר בתאריך: ${created_date}</em>
+			<em>להגשה בתאריך : <span  class="deadline">${deadline}</span></em>
+			<div class = "task-controls">
+
+		<button class="edit-btn" data-id ="${id}">ערוך</button>
+		<button class="delete-btn" data-id="${id}">מחק</button>
         </div></div></li>
     `;
 	}
@@ -69,25 +165,32 @@
 				console.log("response", response);
 				let tasks = JSON.parse(response);
 				for (let i = 0; i < tasks.length; i++) {
-					$('#tasks-list').append(renderTasks(tasks[i]))
+					const taskHtml = renderTasks(tasks[i]);
+
+					if (tasks[i].status === 'completed') {
+						$('#completed-tasks').append(taskHtml);
+					} else {
+						$('#tasks-list').append(taskHtml);
+					}
 				}
+
 			},
 			error: function () {
 				alert("error");
 			}
 		})
 
-		$('#add-btn').on("click", function () {
-			const title = $('#title-input').val();
-			const p_id = project_id;
-
+		$(document).on("click",'.add-btn', function () {
+			const title = $('#title-input').val().trim();
+			const date = $('#deadline').val();
 			$.ajax({
 				url: "<?php echo site_url('Tasks/add')?>",
 				method: 'POST',
 				dataType: 'json',
 				data: {
 					title: title,
-					p_id: p_id,
+					p_id: project_id,
+					date: date
 
 				},
 				success: function (response) {
@@ -101,7 +204,10 @@
 						$('#tasks-list').append(renderTasks(task))
 						console.log(`Created at ${new Date(task.created_at * 1000).toLocaleString()}`);
 						$('#title-input').val('');
+						$('#deadline').val('')
 						console.log($("#task-" + task.id + " .task-status").data("id"));
+						let modal = bootstrap.Modal.getInstance(document.getElementById('add-modal'));
+						modal.hide();
 					}
 				}
 
@@ -109,12 +215,63 @@
 			})
 
 		})
+		//edit task
+
+		$(document).on("click", ".edit-btn", async function(){
+			const taskId = $(this).data('id');
+			const title = $("#task-"+taskId).find('h3').text();
+			const deadline = $("#task-"+taskId).find('.deadline').text();//data("timestamp")
+			console.log(title,deadline);
+			$("#title-update").val(title);
+			$("#date-update").val(deadline);
+			$("#edit-modal").data("task-id",taskId);
+
+			$("#edit-modal").modal("show");
+		})
 
 
-		$(document).on("click", ".delete-btn", function () {
+		$('#edit-task').on("click", function (){
+		const taskId = $("#edit-modal").data('task-id');
+		const title = $("#title-update").val();
+		const date = $("#date-update").val();
+		const $taskElement = $("#task-"+taskId);
+
+			console.log(taskId,title,date,$taskElement.html())
+		$.ajax({
+			url:'<?php echo site_url('Tasks/update_task') ?>',
+			method:'POST',
+			dataType: 'json',
+			data:{
+				id: taskId,
+				title:title,
+				deadline:date
+
+			},
+			success: function (response){
+				console.log(response)
+				$taskElement.find('h3').text(title);
+				$taskElement.find('.deadline').text(date);
+			},
+			error: function (){
+				console.log("didn't update")
+			}
+
+		})
+
+		console.log(taskId)
+			let modal = bootstrap.Modal.getInstance(document.getElementById('edit-modal'));
+			modal.hide();
+		}
+	)
+		//delete task
+
+		$(document).on("click", ".delete-btn", async function () {
 			const taskId = $(this).data('id');
 			const $taskDiv = $('#task-' + taskId);
-			if (!confirm('Sure you want to delete?')) return;
+			const confirm = await askConfirmation();
+
+
+			if (!confirm) return;
 			$.ajax({
 				url: "<?php echo site_url('Tasks/delete') ?>",
 				method: 'POST',
@@ -134,7 +291,7 @@
 			let status = $(this).is(":checked") ? "completed" : "pending";
 			console.log("Task", taskId, "new status:", status);
 			$.ajax({
-				url: "<?php echo site_url('Tasks/update')?>",
+				url: "<?php echo site_url('Tasks/update_status')?>",
 				method: 'POST',
 				data: {
 					task_id: taskId,
@@ -143,6 +300,11 @@
 				success: function (response) {
 					console.log("response:", response);
 					$("#task-" + taskId).toggleClass("completed", status);
+					if (status === "completed") {
+						$("#completed-tasks").append($("#task-" + taskId));
+					} else {
+						$("#tasks-list").append($("#task-" + taskId));
+					}
 
 				}
 			})

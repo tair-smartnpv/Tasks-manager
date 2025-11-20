@@ -14,6 +14,8 @@ class Tasks extends CI_Controller
 		$this->load->model('Tasks_model');
 		$this->load->helper('url');
 		$this->load->model('Projects_model');
+		$this->load->helper(array('url', 'form'));
+		$this->load->library('form_validation');
 
 	}
 
@@ -35,35 +37,38 @@ class Tasks extends CI_Controller
 
 	public function add()
 	{
-		$this->load->helper(array('url','form'));
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('title','Title','required|regex_match[/^[\p{L}\p{N}\s]+$/u]',
-	array(
-		'required' =>'יש להזין שם למשימה',
-		'regex_match'=> 'תווים לא תקינים'
-	));
 
-		
-
-		if ($this->form_validation->run() == FALSE){
-			echo json_encode(array('status'=> 'error','message'=>validation_errors()));
-		}
-		else{
-			$title = $this->input->post('title');
-		$created_at =time();
-		$task_status = 'pending';
-		$project_id = $this->input->post('p_id');		
-		$id = $this->Tasks_model->add_task($title,$task_status,$project_id,$created_at);
-
-		echo json_encode(array(
-			'status'=> 'success',
-			'title' => $title,
-			'created_at' => $created_at,
-			'task_status' => $task_status,
-			'project_id' => $project_id,
-			'id'=> $id
+		$this->form_validation->set_rules('title', 'Title', 'required|regex_match[/^[\p{L}\p{N}\s]+$/u]',
+			array(
+				'required' => 'יש להזין שם למשימה',
+				'regex_match' => 'תווים לא תקינים'
+			));
+		$this->form_validation->set_rules('date', 'Date', 'required', array(
+			'required' => 'יש לבחור תאריך יעד'
 		));
-	}
+
+
+		if ($this->form_validation->run() == FALSE) {
+			echo json_encode(array('status' => 'error', 'message' => validation_errors()));
+		} else {
+			$title = $this->input->post('title');
+			$created_at = time();
+			$task_status = 'pending';
+			$project_id = $this->input->post('p_id');
+			$date = $this->input->post('date');
+			$deadline = strtotime($date);
+			$id = $this->Tasks_model->add_task($title, $project_id, $created_at, $deadline);
+
+			echo json_encode(array(
+				'status' => 'success',
+				'title' => $title,
+				'created_at' => $created_at,
+				'task_status' => $task_status,
+				'project_id' => $project_id,
+				'id' => $id,
+				'deadline' => $deadline
+			));
+		}
 
 	}
 
@@ -75,14 +80,44 @@ class Tasks extends CI_Controller
 		$this->load->view('Tasks_view', $data);
 
 	}
-	public function update(){
+
+	public function update_status()
+	{
 		$status = $this->input->post('status');
 		$id = $this->input->post('task_id');
-		$res = $this->Tasks_model->update_task($id,$status);
+		$res = $this->Tasks_model->update_task_status($id, $status);
 		if ($res) {
 			echo json_encode(array('status' => 'success'));
 		}
 
+	}
+
+	public function update_task()
+	{
+		$this->form_validation->set_rules('title', 'Title', 'required|regex_match[/^[\p{L}\p{N}\s]+$/u]',
+			array(
+				'required' => 'יש להזין שם למשימה',
+				'regex_match' => 'תווים לא תקינים'
+			));
+		$this->form_validation->set_rules('deadline', 'Deadline', 'required', array(
+			'required' => 'יש לבחור תאריך יעד'
+		));
+
+
+
+		if ($this->form_validation->run() == FALSE) {
+			echo json_encode(array('status' => 'error', 'message' => validation_errors()));
+		} else {
+			$id = $this->input->post('id');
+			$title = $this->input->post('title');
+			$deadline = $this->input->post('deadline');
+			$deadline = strtotime($deadline);
+			if ($this->Tasks_model->update_task_in_db($id, $title, $deadline)) {
+				echo json_encode(array('status' => 'success'));
+			}
+			else{
+				echo json_encode(array('status' => 'error', 'message' => 'עדכון המשימה נכשל במודל או שלא בוצעו שינויים.','date'=>$deadline));			}
+		}
 	}
 
 
