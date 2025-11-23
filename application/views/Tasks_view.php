@@ -30,7 +30,8 @@
 <!--	<label>שם משימה:</label>-->
 <!--	<label for='title-input'></label><input id='title-input'>-->
 <!--	<label>לתאריך:</label>-->
-<!--	<label for="deadline"></label><input type="date" id="deadline" min="--><?php //echo date('Y-m-d'); ?><!--" required>-->
+<!--	<label for="deadline"></label><input type="date" id="deadline" min="-->
+<?php //echo date('Y-m-d'); ?><!--" required>-->
 <!--	<button id='add-btn'>הוסף משימה</button>-->
 <!---->
 <!---->
@@ -97,16 +98,27 @@
 </div>
 
 
-<h3>משימות שלא עשיתי: </h3>
-<ul id="tasks-list">
+<h3>משימות שלא סיימתי: (<span id="open-count"></span>)</h3>
+<ul id="open-tasks">
 </ul>
 
-<h3>משימות שעשיתי:</h3>
+<h3>משימות שסיימתי: (<span id="completed-count"></span>)</h3>
 <ul id="completed-tasks"></ul>
 
 
 <script>
 	let project_id = "<?php echo $project_id; ?>";
+
+	function updateCounters() {
+
+		const openTasks = $("#open-tasks li").length;
+		console.log(openTasks);
+		$('#open-count').text(openTasks)
+		const completedTasks = $("#completed-tasks li").length;
+		$('#completed-count').text(completedTasks);
+		console.log(completedTasks);
+	}
+
 
 	function askConfirmation() {
 		return new Promise((resolve) => {
@@ -152,11 +164,7 @@
 	}
 
 	$(document).ready(function () {
-		$(function () {
-			$('#tasks-list').sortable();
-			$('#tasks-list').disableSelection();
 
-		})
 		//load all by id
 		$.ajax({
 			url: "<?php echo site_url('Tasks/get_by_project/'); ?>" + project_id,
@@ -170,9 +178,10 @@
 					if (tasks[i].status === 'completed') {
 						$('#completed-tasks').append(taskHtml);
 					} else {
-						$('#tasks-list').append(taskHtml);
+						$('#open-tasks').append(taskHtml);
 					}
 				}
+				updateCounters();
 
 			},
 			error: function () {
@@ -180,7 +189,7 @@
 			}
 		})
 
-		$(document).on("click",'.add-btn', function () {
+		$(document).on("click", '.add-btn', function () {
 			const title = $('#title-input').val().trim();
 			const date = $('#deadline').val();
 			$.ajax({
@@ -201,13 +210,14 @@
 					}
 					if (response.status === "success") {
 						let task = response;
-						$('#tasks-list').append(renderTasks(task))
+						$('#open-tasks').append(renderTasks(task))
 						console.log(`Created at ${new Date(task.created_at * 1000).toLocaleString()}`);
 						$('#title-input').val('');
 						$('#deadline').val('')
 						console.log($("#task-" + task.id + " .task-status").data("id"));
 						let modal = bootstrap.Modal.getInstance(document.getElementById('add-modal'));
 						modal.hide();
+						updateCounters();
 					}
 				}
 
@@ -217,57 +227,59 @@
 		})
 		//edit task
 
-		$(document).on("click", ".edit-btn", async function(){
+		$(document).on("click", ".edit-btn", async function () {
 			const taskId = $(this).data('id');
-			const title = $("#task-"+taskId).find('h3').text();
-			const deadline = $("#task-"+taskId).find('.deadline').text();//data("timestamp")
-			console.log(title,deadline);
+			const title = $("#task-" + taskId).find('h3').text();
+			const deadline = $("#task-" + taskId).find('.deadline').text();//data("timestamp")
+			console.log(title, deadline);
 			$("#title-update").val(title);
 			$("#date-update").val(deadline);
-			$("#edit-modal").data("task-id",taskId);
+			$("#edit-modal").data("task-id", taskId);
 
 			$("#edit-modal").modal("show");
 		})
 
 
-		$('#edit-task').on("click", function (){
-		const taskId = $("#edit-modal").data('task-id');
-		const title = $("#title-update").val();
-		const date = $("#date-update").val();
-		const $taskElement = $("#task-"+taskId);
+		$('#edit-task').on("click", function () {
+				const taskId = $("#edit-modal").data('task-id');
+				const title = $("#title-update").val();
+				const date = $("#date-update").val();
+				const $taskElement = $("#task-" + taskId);
 
-			console.log(taskId,title,date,$taskElement.html())
-		$.ajax({
-			url:'<?php echo site_url('Tasks/update_task') ?>',
-			method:'POST',
-			dataType: 'json',
-			data:{
-				id: taskId,
-				title:title,
-				deadline:date
+				console.log(taskId, title, date, $taskElement.html())
+				$.ajax({
+					url: '<?php echo site_url('Tasks/update_task') ?>',
+					method: 'POST',
+					dataType: 'json',
+					data: {
+						id: taskId,
+						title: title,
+						deadline: date
 
-			},
-			success: function (response){
-				console.log(response)
-				$taskElement.find('h3').text(title);
-				$taskElement.find('.deadline').text(date);
-			},
-			error: function (){
-				console.log("didn't update")
+					},
+					success: function (response) {
+						console.log(response)
+						$taskElement.find('h3').text(title);
+						$taskElement.find('.deadline').text(date);
+
+					},
+					error: function () {
+						console.log("didn't update")
+					}
+
+				})
+
+				console.log(taskId)
+				let modal = bootstrap.Modal.getInstance(document.getElementById('edit-modal'));
+				modal.hide();
 			}
-
-		})
-
-		console.log(taskId)
-			let modal = bootstrap.Modal.getInstance(document.getElementById('edit-modal'));
-			modal.hide();
-		}
-	)
+		)
 		//delete task
 
 		$(document).on("click", ".delete-btn", async function () {
 			const taskId = $(this).data('id');
 			const $taskDiv = $('#task-' + taskId);
+			const $li = $taskDiv.closest('li');
 			const confirm = await askConfirmation();
 
 
@@ -278,17 +290,25 @@
 				data: {id: taskId},
 				success: function (response) {
 					console.log("deleted");
-					$taskDiv.fadeOut(300, function () {
+					$li.fadeOut(300, function () {
 						$(this).remove();
+						updateCounters();
 					})
 
+
+				},
+				error: function () {
+					console.log("Delete failed")
 				}
 			})
 
 		})
 		$(document).on("change", ".task-status", function () {
 			let taskId = $(this).data("id");
-			let status = $(this).is(":checked") ? "completed" : "pending";
+			// let status = $(this).is(":checked") ? "completed" : "pending";
+			let status = $("#task-" + taskId + " .task-status").is(":checked")
+				? "completed"
+				: "pending";
 			console.log("Task", taskId, "new status:", status);
 			$.ajax({
 				url: "<?php echo site_url('Tasks/update_status')?>",
@@ -299,13 +319,20 @@
 				},
 				success: function (response) {
 					console.log("response:", response);
-					$("#task-" + taskId).toggleClass("completed", status);
+					$("#task-" + taskId).toggleClass("completed", status === 'completed');
 					if (status === "completed") {
-						$("#completed-tasks").append($("#task-" + taskId));
+						// $("#completed-tasks").append($("#task-" + taskId));
+					$('#task-'+taskId).closest('li').appendTo("#completed-tasks")
 					} else {
-						$("#tasks-list").append($("#task-" + taskId));
-					}
+						// $("#open-tasks").append($("#task-" + taskId));
+						$('#task-'+taskId).closest('li').appendTo("#open-tasks")
 
+					}
+					updateCounters();
+
+				},
+				error: function () {
+					console.log("Status didn't update")
 				}
 			})
 

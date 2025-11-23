@@ -41,7 +41,7 @@ display: flex;
 	 margin-bottom: 10px;
  }
 
- #tasks-list{
+ #open-tasks{
 	list-style-type: none;
 	 /*width: 80%;*/
  }
