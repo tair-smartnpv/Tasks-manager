@@ -12,26 +12,27 @@
 <body>
 
 <div>
-<div class="jumboyron"><div>
-		<div class="user">
-			<label>שלום, <?php echo $username?> </label>
-		<button id="logout">התנתקות</button>
+	<div class="jumboyron">
+		<div>
+			<div class="user">
+				<label>שלום, <?php echo $username ?> </label>
+				<button id="logout">התנתקות</button>
+			</div>
+		</div>
+		<h1 class="display-4">הפרויקטים שלי</h1>
+		<h2 class="lead">כל הפרויקטים</h2>
+		<hr class="my-4">
+		<p class="lead">
+			<button type="button" class="modal-btn" data-bs-toggle="modal" data-bs-target="#addProject">
+				הוסף פרויקט חדש
+			</button>
+		</p>
+
 	</div>
-	</div>
-	<h1 class="display-4">הפרויקטים שלי</h1>
-	<h2 class ="lead">כל הפרויקטים</h2>
-	  <hr class="my-4">
- <p class="lead">
-    <button type="button" class="modal-btn" data-bs-toggle="modal" data-bs-target="#addProject">
-			הוסף פרויקט חדש
-		</button>
-  </p>
+
 
 </div>
-
-
-</div>
-<div class="modal" id="addProject"  tabindex="1">
+<div class="modal" id="addProject" tabindex="1">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -55,7 +56,7 @@
 		</div>
 	</div>
 </div>
-<div class = "project-list " id="project-list"></div>
+<div class="project-list " id="project-list"></div>
 
 
 <script>
@@ -75,11 +76,11 @@
     `;
 	}
 
-	function progressBar(total, completed, projectID){
+	function progressBar(total, completed, projectID) {
 		let percent = (completed / total) * 100;
-		console.log(total,completed)
-		$("#progress-"+projectID).css("width", percent + "%");
-		$("#progress-"+projectID).attr("aria-valuenow", percent);
+		console.log(total, completed)
+		$("#progress-" + projectID).css("width", percent + "%");
+		$("#progress-" + projectID).attr("aria-valuenow", percent);
 	}
 
 	$(document).ready(function () {
@@ -91,13 +92,13 @@
 				// console.log("hello")
 				let projects = JSON.parse(response)
 				for (let i = 0; i < projects.length; i++) {
-					let  projectID = projects[i].id;
+					let projectID = projects[i].id;
 					let total = projects[i].total_tasks;
-					 let completed = projects[i].completed_tasks;
+					let completed = projects[i].completed_tasks;
 
 					$('#project-list').append(renderProject(projects[i]))
 					console.log(projects[i])
-					progressBar( total, completed, projectID);
+					progressBar(total, completed, projectID);
 				}
 
 			},
@@ -122,11 +123,11 @@
 				},
 				success: function (response) {
 					console.log(response);
-					if (response.status === "error"){
+					if (response.status === "error") {
 						$("#error-box").html(response.message).show();
 						return;
 					}
-					if (response.status === "success"){
+					if (response.status === "success") {
 						let project = response;
 						$('#project-list').append(renderProject(project))
 						console.log(`Created at ${new Date(project.created_at * 1000).toLocaleString()}`);
@@ -134,7 +135,8 @@
 
 						modal.hide();
 						$('#name-input').val('');
-						$('#desc-input').val('');}
+						$('#desc-input').val('');
+					}
 
 
 				},
@@ -154,7 +156,7 @@
 			$.ajax({
 				url: '<?php echo site_url("Projects/delete"); ?>',// + projectId,
 				method: 'POST',
-				data:{id:projectId},
+				data: {id: projectId},
 				dataType: 'json',
 				success: function (response) {
 					console.log("deleted");
@@ -163,22 +165,22 @@
 						$(this).remove();
 					})
 				},
-				error: function (){
+				error: function () {
 					alert("error")
 				}
 
 			})
 		})
 
-		$('#logout').on("click", function(){
+		$('#logout').on("click", function () {
 			$.ajax({
-				url:'Login/logout',
-				method:'POST',
-				dataType:'json',
-				data:{
+				url: 'Login/logout',
+				method: 'POST',
+				dataType: 'json',
+				data: {
 					logout: 'logout'
 				},
-				success: function (response){
+				success: function (response) {
 					window.location.href = "Login";
 				}
 			})

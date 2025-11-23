@@ -1,16 +1,46 @@
-.header{
-display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 60px 70px 40px 100px;
-	background-color: #ffffff;
-}
-	
-.title{
-	padding-top:50px;
-	color: #000000;
+/*.header{*/
+/*!*display: flex;*!*/
+/*!*	justify-content: space-between;*!*/
+/*!*	align-items: center;*!*/
+/*!*	padding: 60px 70px 40px 100px;*!*/
+/*!*	background-color: #ffffff;*!*/
+/*	display: flex;*/
+/*	justify-content: space-between;*/
+/*	align-items: center;*/
+/*	padding: 60px 70px 40px 100px;*/
+/*}*/
+/*	*/
+.display-6{
+	margin-top:50px;
  }
 
+.jumboyron {
+	padding-right: 100px;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	padding-left: 100px;
+	background-color: aliceblue;
+	/*gap: 20px;*/
+}
+
+.pending{
+	padding: 10px 50px 50px;
+	/*margin: 50px;*/
+}
+.pending h3{
+	font-weight: normal;
+	margin: 30px;
+
+}
+
+.completed{
+	padding: 10px 50px 50px;
+}
+.completed h3{
+	font-weight: normal;
+	margin: 30px;
+
+}
 
  .adder{
 	width: 60%;
@@ -36,10 +66,10 @@ display: flex;
 
  }
 
- h3{
-	margin-right: 20px;
-	 margin-bottom: 10px;
- }
+ /*h3{*/
+	/*margin-right: 20px;*/
+	/* margin-bottom: 10px;*/
+ /*}*/
 
  #open-tasks{
 	list-style-type: none;
@@ -57,7 +87,7 @@ display: flex;
 	 /*font-style: italic;*/
  }
 
-#completed-tasks .task h3{
+#completed-tasks .task h4{
 	float: left;
 	opacity: 0.85;
 	text-decoration: line-through;
@@ -88,7 +118,7 @@ display: flex;
 		 position: relative;
 
 }
- .task h3{
+ .task h4{
 	 /*font-size: small;*/
  }
  /*.task.completed h3{*/
@@ -103,3 +133,6 @@ display: flex;
 	 border-radius: 5px;
  }
 
+h4{
+	font-weight: normal;
+}

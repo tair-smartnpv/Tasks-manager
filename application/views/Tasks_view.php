@@ -14,31 +14,21 @@
 
 <body>
 
-<div class="header">
+<div class="jumboyron">
 
 	<div>
-		<a href="http://localhost/TaskManager/index.php/projects">חזרה לרשימת פרויקטים</a>
+		<a id="projects-list" href="http://localhost/TaskManager/index.php/projects">חזרה לרשימת פרויקטים</a>
 		<div>
-			<h1 class="title">פרויקט: <?= $project->name ?> </h1>
+			<h1 class="display-6">פרויקט: <?= $project->name ?> </h1>
+			<hr class="my-4">
+
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-modal">
+				הוסף משימה
+			</button>
 
 		</div>
 	</div>
 </div>
-<!--<div class="adder">-->
-<!--	<p>הוספת משימה חדשה:</p>-->
-<!--	<div id="error-box" class="text-danger mt-2"></div>-->
-<!--	<label>שם משימה:</label>-->
-<!--	<label for='title-input'></label><input id='title-input'>-->
-<!--	<label>לתאריך:</label>-->
-<!--	<label for="deadline"></label><input type="date" id="deadline" min="-->
-<?php //echo date('Y-m-d'); ?><!--" required>-->
-<!--	<button id='add-btn'>הוסף משימה</button>-->
-<!---->
-<!---->
-<!--</div>-->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-modal">
-	הוסף משימה
-</button>
 <div class="modal fade" id="add-modal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -97,14 +87,16 @@
 
 </div>
 
+<div class="pending">
+	<h3>משימות שלא סיימתי: (<span id="open-count"></span>)</h3>
+	<ul id="open-tasks">
+	</ul>
+</div>
 
-<h3>משימות שלא סיימתי: (<span id="open-count"></span>)</h3>
-<ul id="open-tasks">
-</ul>
-
-<h3>משימות שסיימתי: (<span id="completed-count"></span>)</h3>
-<ul id="completed-tasks"></ul>
-
+<div class="completed">
+	<h3>משימות שסיימתי: (<span id="completed-count"></span>)</h3>
+	<ul id="completed-tasks"></ul>
+</div>
 
 <script>
 	let project_id = "<?php echo $project_id; ?>";
@@ -152,7 +144,7 @@
 		return `<li >
         <div class="task" id="task-${id}">
 			<input type = "checkbox" class= "task-status" data-id = "${id}"   ${status === 'completed' ? "checked" : ""}>
-            <h3>${title}</h3>
+            <h4>${title}</h4>
 			<em>נוצר בתאריך: ${created_date}</em>
 			<em>להגשה בתאריך : <span  class="deadline">${deadline}</span></em>
 			<div class = "task-controls">
@@ -322,10 +314,10 @@
 					$("#task-" + taskId).toggleClass("completed", status === 'completed');
 					if (status === "completed") {
 						// $("#completed-tasks").append($("#task-" + taskId));
-					$('#task-'+taskId).closest('li').appendTo("#completed-tasks")
+						$('#task-' + taskId).closest('li').appendTo("#completed-tasks")
 					} else {
 						// $("#open-tasks").append($("#task-" + taskId));
-						$('#task-'+taskId).closest('li').appendTo("#open-tasks")
+						$('#task-' + taskId).closest('li').appendTo("#open-tasks")
 
 					}
 					updateCounters();
