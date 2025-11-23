@@ -23,7 +23,7 @@ class projects_model extends CI_Model
 
 	public function get_project($id)
 	{
-		return $this->db->get_where('projects', ['id' => $id])->row();
+		return $this->db->get_where('projects', array('id' => $id))->row();
 	}
 
 	public function add_project($name, $description, $created_at, $user_id)
@@ -42,6 +42,17 @@ class projects_model extends CI_Model
 	{
 		$this->db->delete('projects', array('id' => $id));
 
+	}
+
+	public function count_tasks($id)
+	{
+		$total = $this->db->where('project_id', $id)->count_all_results('tasks');;
+		log_message('debug', $total);
+		$completed = $this->db->where(
+			array('project_id' => $id,
+				'status' => 'completed'))->count_all_results('tasks');
+		log_message('debug', $completed);
+		return array('total'=>$total,'completed'=> $completed);
 	}
 
 }

@@ -64,11 +64,22 @@
         <div class="project" id="project-${project.id}">
             <h2>${project.name}</h2>
 				<p> ${project.description}</p>
+
+<div class="progress">
+  <div id="progress-${project.id}" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
 <div class = "project-btn">
  		<a href='tasks/index/${project.id}' class='btn btn-primary'>משימות</a>
 <button class="delete-btn" data-id="${project.id}">מחק</button>
       </div>  </div>
     `;
+	}
+
+	function progressBar(total, completed, projectID){
+		let percent = (completed / total) * 100;
+		console.log(total,completed)
+		$("#progress-"+projectID).css("width", percent + "%");
+		$("#progress-"+projectID).attr("aria-valuenow", percent);
 	}
 
 	$(document).ready(function () {
@@ -80,7 +91,13 @@
 				// console.log("hello")
 				let projects = JSON.parse(response)
 				for (let i = 0; i < projects.length; i++) {
+					let  projectID = projects[i].id;
+					let total = projects[i].total_tasks;
+					 let completed = projects[i].completed_tasks;
+
 					$('#project-list').append(renderProject(projects[i]))
+					console.log(projects[i])
+					progressBar( total, completed, projectID);
 				}
 
 			},

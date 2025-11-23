@@ -22,9 +22,20 @@ class projects extends CI_Controller
 	public function index()
 	{
 		$user_id = $_SESSION['user_id'];
-		$data['projects'] = $this->projects_model->get_projects_by_user($user_id);
+
 		$data['user_id'] = $user_id;
 		$data['username'] = $_SESSION['username'];
+		$projects = $this->projects_model->get_projects_by_user($user_id);
+		foreach ($projects as $project) {
+			$progress = $this->projects_model->count_tasks($project->id);
+			$total = $progress['total'];
+			$completed = $progress['completed'];
+			$project->total_tasks = $total;
+			$project->completed_tasks = $completed;
+			log_message('DEBUG','total' . $total . ' completed' . $completed);
+		}
+		$data['projects'] = $projects;
+
 		$this->load->view('projects_view', $data);
 
 	}
@@ -32,7 +43,14 @@ class projects extends CI_Controller
 	public function get_projects_by_user()
 	{
 		$projects = $this->projects_model->get_projects_by_user($_SESSION['user_id']);
-
+		foreach ($projects as $project) {
+			$progress = $this->projects_model->count_tasks($project->id);
+			$total = $progress['total'];
+			$completed = $progress['completed'];
+			$project->total_tasks = $total;
+			$project->completed_tasks = $completed;
+			log_message('DEBUG','total' . $total . ' completed' . $completed);
+		}
 		echo json_encode($projects);
 	}
 
@@ -90,6 +108,14 @@ class projects extends CI_Controller
 
 
 	}
+
+	public function progress($project_id){
+		$project = $this->projects_model->count_tasks($project_id);
+		$total = $project['total'];
+		$completed = $project['completed'];
+		echo json_encode(array('total'=>$total,'completed'=>$completed));
+	}
+
 
 
 }
