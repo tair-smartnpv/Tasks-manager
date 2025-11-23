@@ -56,6 +56,24 @@
 		</div>
 	</div>
 </div>
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">בטוח שאתה רוצה למחוק?</h5>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-danger" id="confirmDelete">מחק</button>
+				<button class="btn btn-secondary" data-bs-dismiss="modal">בטל</button>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
 <div class="project-list " id="project-list"></div>
 
 
@@ -82,6 +100,24 @@
 		$("#progress-" + projectID).css("width", percent + "%");
 		$("#progress-" + projectID).attr("aria-valuenow", percent);
 	}
+	function askConfirmation() {
+		return new Promise((resolve) => {
+
+			$("#delete-modal").modal("show");
+
+			$("#confirmDelete").one("click", function () {
+				$("#delete-modal").modal("hide");
+				resolve(true);
+			});
+
+			$("#cancelDelete").one("click", function () {
+				$("#delete-modal").modal("hide");
+				resolve(false);
+			});
+		});
+	}
+
+
 
 	$(document).ready(function () {
 		// load all
@@ -147,12 +183,12 @@
 			})
 
 		})
-
-		$(document).on("click", ".delete-btn", function () {
+		//delete project
+		$(document).on("click", ".delete-btn", async function () {
 			const projectId = $(this).data('id');
 			const $projectDiv = $('#project-' + projectId);
-			if (!confirm('בטוח שברצונך למחוק את הפרויקט הזה?')) return;
-
+			const confirm = await askConfirmation();
+			if(!confirm)return;
 			$.ajax({
 				url: '<?php echo site_url("Projects/delete"); ?>',// + projectId,
 				method: 'POST',
