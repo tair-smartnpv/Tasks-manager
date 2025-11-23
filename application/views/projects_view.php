@@ -32,12 +32,12 @@
 
 
 </div>
-<div class="modal" id="addProject" tabindex="1">
+<div class="modal fade" id="addProject" tabindex="1">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
+
 				<h1 class="modal-title fs-5" id="staticBackdropLabel">הוסף פרויקט חדש</h1>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<div id="error-box" class="text-danger mt-2"></div>
@@ -50,15 +50,15 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="add-btn">הוסף</button>
+				<button type="button" class="btn btn-primary" id="add-btn">הוסף</button>
 
 			</div>
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog"
 	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">בטוח שאתה רוצה למחוק?</h5>
@@ -100,6 +100,7 @@
 		$("#progress-" + projectID).css("width", percent + "%");
 		$("#progress-" + projectID).attr("aria-valuenow", percent);
 	}
+
 	function askConfirmation() {
 		return new Promise((resolve) => {
 
@@ -116,7 +117,6 @@
 			});
 		});
 	}
-
 
 
 	$(document).ready(function () {
@@ -144,7 +144,7 @@
 		});
 
 		//add project
-		$(document).on("click", ".add-btn", function () {
+		$('#add-btn').on("click",  function () {
 			const name = $('#name-input').val().trim();
 			const desc = $('#desc-input').val().trim();
 
@@ -188,7 +188,7 @@
 			const projectId = $(this).data('id');
 			const $projectDiv = $('#project-' + projectId);
 			const confirm = await askConfirmation();
-			if(!confirm)return;
+			if (!confirm) return;
 			$.ajax({
 				url: '<?php echo site_url("Projects/delete"); ?>',// + projectId,
 				method: 'POST',

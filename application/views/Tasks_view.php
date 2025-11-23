@@ -36,7 +36,6 @@
 				<h5 class="modal-title">הוספת משימה חדשה</h5>
 			</div>
 			<div class="modal-body">
-				<p>הוספת משימה חדשה:</p>
 				<div id="error-box" class="text-danger mt-2"></div>
 				<label>שם משימה:</label>
 				<label for='title-input'></label><input id='title-input'>
@@ -45,7 +44,7 @@
 													 required>
 			</div>
 			<div class="modal-footer">
-				<button class='add-btn'>הוסף משימה</button>
+				<button class ="btn btn-primary" id='add-btn'>הוסף משימה</button>
 			</div>
 		</div>
 	</div>
@@ -71,7 +70,7 @@
 </div>
 <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
 	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">בטוח שאתה רוצה למחוק?</h5>
@@ -87,13 +86,13 @@
 
 </div>
 
-<div class="pending">
+<div class="tasks-list">
 	<h3>משימות שלא סיימתי: (<span id="open-count"></span>)</h3>
 	<ul id="open-tasks">
 	</ul>
 </div>
 
-<div class="completed">
+<div class="tasks-list">
 	<h3>משימות שסיימתי: (<span id="completed-count"></span>)</h3>
 	<ul id="completed-tasks"></ul>
 </div>
@@ -181,7 +180,7 @@
 			}
 		})
 
-		$(document).on("click", '.add-btn', function () {
+		$("#add-btn").on("click",  function () {
 			const title = $('#title-input').val().trim();
 			const date = $('#deadline').val();
 			$.ajax({
@@ -221,7 +220,7 @@
 
 		$(document).on("click", ".edit-btn", async function () {
 			const taskId = $(this).data('id');
-			const title = $("#task-" + taskId).find('h3').text();
+			const title = $("#task-" + taskId).find('h4').text();
 			const deadline = $("#task-" + taskId).find('.deadline').text();//data("timestamp")
 			console.log(title, deadline);
 			$("#title-update").val(title);
@@ -251,7 +250,7 @@
 					},
 					success: function (response) {
 						console.log(response)
-						$taskElement.find('h3').text(title);
+						$taskElement.find('h4').text(title);
 						$taskElement.find('.deadline').text(date);
 
 					},

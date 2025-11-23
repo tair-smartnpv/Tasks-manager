@@ -113,3 +113,25 @@
 .progress{
 	margin-bottom: 10px;
 }
+
+.modal-header{
+	direction: rtl;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+}
+
+.modal-body{
+	/*align-items: center;*/
+	display: grid;
+	margin: auto;
+}
+.modal-body label{
+
+}
+
+.modal-body input{
+	background-color: #ffffff;;
+	border-radius: 5px;
+}

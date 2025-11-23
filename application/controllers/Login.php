@@ -39,7 +39,7 @@ class Login extends CI_Controller
 
 			//login succeed
 			if (!$this->Login_model->user_exists($email)) {
-				echo json_encode(array('status' => 'fail', array(
+				echo json_encode(array('status' => 'fail','message'=> array(
 					'email' => 'משתמש לא נמצא')));
 				return;
 			} //wrong password
@@ -59,16 +59,6 @@ class Login extends CI_Controller
 		}
 	}
 
-//	public function user_exists($email) {
-//		if(!$this->Login_model->user_exists($email)) {
-//			$this->form_validation->set_message('user_exist','משתמש לא נמצא');
-//		}
-//	}
-//	public function correct_password($email, $pass){
-//		if (!$this->Login_model->correct_password($email, $pass)) {
-//			$this->form_validation->set_message('correct_password','סיסמא שגויה');
-//		}
-//	}
 
 	public function logout()
 	{
