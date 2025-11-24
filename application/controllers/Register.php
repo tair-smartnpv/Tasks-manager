@@ -51,8 +51,19 @@ class Register extends CI_Controller
 			$email = $this->input->post('email');
 			$pass = $this->input->post('pass');
 			$id = $this->Register_model->addUser($name, $pass, $email);
+			$key = bin2hex(random_bytes(20));
+			log_message('DEBUG','API Key:' . $key);
 
-			echo json_encode(array('status' => 'success', 'user_id' => $id)
+			$this->db->insert('keys', array(
+				'user_id' => $id,
+				'key' => $key,
+				'level' => 1,
+				'ignore_limits' => 0,
+				'is_private_key' => 0,
+				'date_created' => time()
+			));
+
+			echo json_encode(array('status' => 'success', 'user_id' => $id, 'key' => $key)
 			);
 		}
 	}

@@ -15,6 +15,7 @@ class projects extends CI_Controller
 		$this->load->model('projects_model');
 		$this->load->helper('url');
 		$this->load->model('Tasks_model');
+//		$this->load->library('projectsImporter');
 
 
 	}

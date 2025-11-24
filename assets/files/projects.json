@@ -1,0 +1,24 @@
+{
+	"user1": {
+		"userID": "id",
+		"username": "name",
+		"email": "email",
+		"user_pass": "hashPass",
+		"connect": "connect",
+		"projects": {
+			"projectID" : "id",
+			"userID": "userID",
+			"projectName": "name",
+			"createdAt": "createdAt",
+			"Tasks": {
+				"taskId": "id",
+				"projectId": "projectId",
+				"title": "title",
+				"status": 
+			}
+		}
+	}
+
+
+
+}

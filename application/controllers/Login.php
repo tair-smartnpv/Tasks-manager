@@ -52,9 +52,11 @@ class Login extends CI_Controller
 			$response = $this->Login_model->login($email, $pass);
 			$user_id = $response['user_id'];
 			$username = $response['name'];
+			$key = $this->db->get_where('keys', array('user_id' => $user_id))->row()->key;
+
 			$this->session->set_userdata(array('user_id' => $user_id));
 			$this->session->set_userdata(array('username' => $username));
-			echo json_encode(array('status' => 'success', 'message' => $user_id));
+			echo json_encode(array('status' => 'success', 'message' => $user_id,'api_key' => $key));
 
 		}
 	}
