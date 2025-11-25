@@ -15,6 +15,9 @@ class Tasks_model extends CI_Model
 
 	}
 
+	public function get_task($id){
+		return $this->db->get_where('tasks',array('id'=>$id))->row();
+	}
 
 	public function add_task($title, $project_id, $created_at, $deadline)
 	{
@@ -54,13 +57,18 @@ class Tasks_model extends CI_Model
 	}
 
 	public function update_task_in_db($id, $title,  $deadline){
-		log_message('debug', 'TASK_UPDATE_START: ID=' . $id . ', Title=' . $title . ', Deadline=' . $deadline);
-		$this->db->where('id', $id);
-		$this->db->update('tasks', array('title' => $title, 'deadline' => $deadline));
-		$query = $this->db->last_query();
-		log_message('debug', 'TASK_UPDATE_SQL: ' . $query);
+		if($this->db->get_where('tasks', array('id'=>$id))->num_rows()==0){
+			return false;
+		}
+		else{
+			log_message('debug', 'TASK_UPDATE_START: ID=' . $id . ', Title=' . $title . ', Deadline=' . $deadline);
+			$this->db->where('id', $id);
+			$this->db->update('tasks', array('title' => $title, 'deadline' => $deadline));
+			$query = $this->db->last_query();
+			log_message('debug', 'TASK_UPDATE_SQL: ' . $query);
 
-		return true;
+			return true;}
+
 	}
 
 	public function delete_tasks_by_project($p_id)

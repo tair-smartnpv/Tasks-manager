@@ -16,7 +16,7 @@ class projects_model extends CI_Model
 
 	public function get_projects_by_user($user_id)
 	{
-		$query = $this->db->get_where('projects', array('user_id=' => $user_id));
+		$query = $this->db->get_where('projects', array('user_id' => $user_id));
 		return $query->result();
 
 	}
@@ -53,6 +53,10 @@ class projects_model extends CI_Model
 				'status' => 'completed'))->count_all_results('tasks');
 		log_message('debug', $completed);
 		return array('total'=>$total,'completed'=> $completed);
+	}
+
+	public function update_project($id, $name, $description){
+		$this->db->where('id', $id)->update('projects', array('name' => $name, 'description' => $description));
 	}
 
 }

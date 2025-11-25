@@ -22,10 +22,19 @@ class Register_model extends CI_Model {
 		return $query->row();
 	}
 
-	public function UpdateUser($id, $user, $password, $email){
+	public function UpdateUser($id, $name, $password, $email){
 		$this->db->where('user_id', $id);
 		$password = password_hash($password, PASSWORD_DEFAULT);
-		$this->db->update('users', array('username'=>$user,'user_pass' => $password, 'email' => $email));
+		$this->db->update('users', array('username'=>$name,'user_pass' => $password, 'email' => $email));
+		$user = $this->db->get_where('users', array('user_id' => $id))->result();
+		return $user;
+	}
+
+	public function getUsersList(){
+		$result = $this->db->get('users')->result();
+//		log_message('debug', $result);
+		log_message('DEBUG', 'getUsersList()');
+		return $result;
 	}
 
 
