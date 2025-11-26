@@ -5,6 +5,7 @@ class Projects_model extends CI_Model
 	public function __construct()
 	{
 		$this->load->database();
+		$this->load->model('Tasks_model');
 	}
 
 	public function get_projects()
@@ -40,6 +41,10 @@ class Projects_model extends CI_Model
 
 	public function delete_project($id)
 	{
+		$tasks= $this->Tasks_model->get_tasks_by_project($id);
+		foreach ($tasks as $task) {
+			$this->Tasks_model->delete_task($task->id);
+		}
 		$this->db->delete('projects', array('id' => $id));
 
 	}

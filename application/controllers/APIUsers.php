@@ -105,7 +105,7 @@ class APIUsers extends RestController
 
 	}
 
-	public function update_user_patch($id = null)
+	public function patch_user_patch($id = null)
 	{
 		if ($id == null) {
 			$this->response(array('status' => 'error', 'error' => 'Please provide an ID'), RestController::HTTP_BAD_REQUEST);

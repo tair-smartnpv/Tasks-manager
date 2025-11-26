@@ -3,6 +3,7 @@
 class Users_model extends CI_Model {
 	public function __construct(){
 		$this->load->database();
+		$this->load->model('Projects_model');
 	}
 
 	public function add_user($user, $password, $email){
@@ -38,6 +39,10 @@ class Users_model extends CI_Model {
 	}
 
 	public function delete_user($id){
+		$projects = $this->Projects_model->get_projects_by_user($id);
+		foreach ($projects as $project){
+			$this->Projects_model->delete_project($project->id);
+		}
 		$this->db->delete('users', array('user_id' => $id));
 	}
 

@@ -94,7 +94,7 @@ class APITasks extends RestController
 						$timestamp = strtotime($deadline);
 						$created = time();
 						$id = $this->Tasks_model->add_task($title, $project_id, $created, $timestamp);
-						$this->response(array('status' => 'success', 'message' => 'Task created.', 'task id' => $id), RestController::HTTP_CREATED);
+						$this->response(array('status' => 'success', 'message' => 'Task created.', 'task_id' => $id), RestController::HTTP_CREATED);
 					}
 
 				}
@@ -102,7 +102,7 @@ class APITasks extends RestController
 		}
 	}
 
-	public function update_task_patch($id = null)
+	public function patch_task_patch($id = null)
 	{
 		$title = $this->patch('title');
 		$deadline = $this->patch('deadline');
@@ -110,7 +110,7 @@ class APITasks extends RestController
 		if ($id === null) {
 			$this->response(array('status' => 'error', 'error' => 'Please provide task id.'), RestController::HTTP_BAD_REQUEST);
 		} else {
-			$task = $this->Task_model->get_task($id);
+			$task = $this->Tasks_model->get_task($id);
 			if (!$task) {
 				$this->response(array('status' => 'error', 'error' => 'Task not found.'), RestController::HTTP_NOT_FOUND);
 			} else {
@@ -135,7 +135,7 @@ class APITasks extends RestController
 						$updated = time();
 						$this->Tasks_model->update_task_in_db($id, $title, $timestamp);
 						$this->Tasks_model->update_task_status($id, $status);
-						$this->response(array('status' => 'ok', 'message' => 'task updated successfully.', 'task_id' => $id, 'updated_at' => $updated), RestController::HTTP_OK);
+						$this->response(array('status' => 'success', 'message' => 'task updated successfully.', 'task_id' => $id, 'updated_at' => $updated), RestController::HTTP_OK);
 					}
 
 				}

@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -52,3 +52,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+
+//users
+
+
+$route['api/users/get-users']['get'] = 'APIUsers/get_all_users';
+$route['api/users/get-user/(:num)']['get'] = 'APIUsers/get_user/$1';
+$route['api/users/add-user']['post'] = 'APIUsers/post_user/';
+$route['api/users/update-user/(:num)']['patch'] = 'APIUsers/patch_user/$1';
+$route['api/users/delete-user/(:num)']['delete'] = 'APIUsers/delete_user/$1';
+
+//projects
+
+$route['api/projects/get-projects']['get'] = 'APIProjects/get_all_projects';
+$route['api/projects/get-project/(:num)']['get'] = 'APIProjects/get_project/$1';
+$route['api/projects/(:num)/get-projects']['get'] = 'APIProjects/get_projects_by_user/$1';
+$route['api/projects/add-project']['post'] = 'APIProjects/post_project/';
+$route['api/projects/update-project/(:num)']['patch'] = 'APIProjects/patch_project/$1';
+$route['api/projects/delete-project']['delete'] = 'APIProjects/delete_project/$1';
+
+
+//tasks
+$route['api/tasks/get-tasks']['get'] = 'APITasks/get_all_tasks';
+$route['api/tasks/get-task/(:num)']['get'] = 'APITasks/get_task/$1';
+$route['api/tasks/(:num)/get-tasks']['get'] = 'APITasks/get_tasks_by_project/$1';
+$route['api/tasks/add-task']['post'] = 'APITasks/post_task/';
+$route['api/tasks/update-task/(:num)']['patch'] = 'APITasks/patch_task/$1';
+$route['api/tasks/delete-task']['delete'] = 'APITasks/delete_task/$1';

@@ -12,9 +12,13 @@ class projects extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('projects_model');
+		$this->load->model('Projects_model');
 		$this->load->helper('url');
 		$this->load->model('Tasks_model');
+		$this->load->helper(array('form', 'url'));
+
+		$this->load->library('form_validation');
+
 //		$this->load->library('projectsImporter');
 
 
@@ -26,9 +30,9 @@ class projects extends CI_Controller
 
 		$data['user_id'] = $user_id;
 		$data['username'] = $_SESSION['username'];
-		$projects = $this->projects_model->get_projects_by_user($user_id);
+		$projects = $this->Projects_model->get_projects_by_user($user_id);
 		foreach ($projects as $project) {
-			$progress = $this->projects_model->count_tasks($project->id);
+			$progress = $this->Projects_model->count_tasks($project->id);
 			$total = $progress['total'];
 			$completed = $progress['completed'];
 			$project->total_tasks = $total;
@@ -43,9 +47,9 @@ class projects extends CI_Controller
 
 	public function get_projects_by_user()
 	{
-		$projects = $this->projects_model->get_projects_by_user($_SESSION['user_id']);
+		$projects = $this->Projects_model->get_projects_by_user($_SESSION['user_id']);
 		foreach ($projects as $project) {
-			$progress = $this->projects_model->count_tasks($project->id);
+			$progress = $this->Projects_model->count_tasks($project->id);
 			$total = $progress['total'];
 			$completed = $progress['completed'];
 			$project->total_tasks = $total;
@@ -57,9 +61,6 @@ class projects extends CI_Controller
 
 	public function add()
 	{
-		$this->load->helper(array('form', 'url'));
-
-		$this->load->library('form_validation');
 		$this->form_validation->set_rules('name', 'Name', 'required|min_length[3]|max_length[20]|regex_match[/^[\p{L}\p{N}\s]+$/u]',
 
 			array('required' => 'יש להזין שם לפרויקט',
@@ -82,7 +83,7 @@ class projects extends CI_Controller
 			$description = $this->input->post('description');
 			$created_at = time();
 			$user_id = $_SESSION['user_id'];
-			$id = $this->projects_model->add_project($name, $description, $created_at,$user_id);
+			$id = $this->Projects_model->add_project($name, $description, $created_at,$user_id);
 			echo json_encode(
 				array('status' => 'success',
 
@@ -103,7 +104,7 @@ class projects extends CI_Controller
 	public function delete()
 	{
 		$id = $this->input->post('id');
-		$this->projects_model->delete_project($id);
+		$this->Projects_model->delete_project($id);
 		$this->Tasks_model->delete_tasks_by_project($id);
 		echo json_encode(array("status" => "success"));
 
@@ -111,7 +112,7 @@ class projects extends CI_Controller
 	}
 
 	public function progress($project_id){
-		$project = $this->projects_model->count_tasks($project_id);
+		$project = $this->Projects_model->count_tasks($project_id);
 		$total = $project['total'];
 		$completed = $project['completed'];
 		echo json_encode(array('total'=>$total,'completed'=>$completed));
