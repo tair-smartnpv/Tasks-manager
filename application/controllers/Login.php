@@ -9,7 +9,7 @@ class Login extends CI_Controller
 		$this->load->helper('url');
 		$this->load->helper('form');
 		$this->load->library('form_validation');
-		$this->load->model('Login_model');
+		$this->load->model('Users_model');
 		$this->load->library('session');
 	}
 
@@ -38,18 +38,18 @@ class Login extends CI_Controller
 			$pass = $this->input->post('password');
 
 			//login succeed
-			if (!$this->Login_model->user_exists($email)) {
+			if (!$this->Users_model->user_exists($email)) {
 				echo json_encode(array('status' => 'fail','message'=> array(
 					'email' => 'משתמש לא נמצא')));
 				return;
 			} //wrong password
-			if (!$this->Login_model->correct_password($email, $pass)) {
+			if (!$this->Users_model->correct_password($email, $pass)) {
 				echo json_encode(array('status' => 'fail', 'message' => array(
 					'password' => 'סיסמא שגויה'
 				)));
 				return;
 			}
-			$response = $this->Login_model->login($email, $pass);
+			$response = $this->Users_model->login($email, $pass);
 			$user_id = $response['user_id'];
 			$username = $response['name'];
 			$key = $this->db->get_where('keys', array('user_id' => $user_id))->row()->key;
@@ -65,7 +65,7 @@ class Login extends CI_Controller
 	public function logout()
 	{
 		$user_id = $_SESSION['user_id'];
-		if ($this->Login_model->logout($user_id)) {
+		if ($this->Users_model->logout($user_id)) {
 			unset($_SESSION['user_id']);
 			unset($_SESSION['username']);
 			echo json_encode(array('status' => 'success'));

@@ -9,7 +9,7 @@ class Register extends CI_Controller
 		parent::__construct();
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
-		$this->load->model('Register_model');
+		$this->load->model('Users_model');
 
 
 	}
@@ -49,7 +49,7 @@ class Register extends CI_Controller
 			$name = $this->input->post('name');
 			$email = $this->input->post('email');
 			$pass = $this->input->post('pass');
-			$id = $this->Register_model->addUser($name, $pass, $email);
+			$id = $this->Users_model->add_user($name, $pass, $email);
 			$key = bin2hex(random_bytes(20));
 			log_message('DEBUG','API Key:' . $key);
 
@@ -69,7 +69,7 @@ class Register extends CI_Controller
 
 	public function unique_email($email)
 	{
-		if ($this->Register_model->check_email($email)) {
+		if ($this->Users_model->check_email($email)) {
 			$this->form_validation->set_message('unique_email', 'האימייל כבר קיים במערכת');
 			return FALSE;
 		} else {
