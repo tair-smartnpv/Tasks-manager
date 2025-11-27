@@ -20,12 +20,25 @@ class Tasks extends CI_Controller
 	}
 
 
-	public function index($project_id = null)
+	public function index($uuid)
 	{
+		$user_id = $_SESSION['user_id'];
+		$project_id= $this->Projects_model->get_project_id($uuid)->id;
 
-		$data['project'] = $this->Projects_model->get_project($project_id);
-		$data['project_id'] = $project_id;
-		$this->load->view('Tasks_view', $data);
+		$project = $this->Projects_model->get_project($project_id,$user_id);
+		log_message('DEBUG','Projects: '. json_encode($project));
+		if($project == null){
+			$data['heading']= 'Error';
+			$data['message']= 'The page you request was not found';
+
+			$this->load->view('errors/html/error_404',$data);
+		}
+		else {
+			$data['project'] = $project;
+			$data['project_id'] = $project_id;
+
+			$this->load->view('Tasks_view', $data);
+		}
 	}
 
 	public function get_by_project($project_id)

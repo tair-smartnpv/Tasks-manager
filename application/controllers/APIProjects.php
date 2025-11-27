@@ -16,47 +16,65 @@ class APIProjects extends RestController
 		$this->load->model('projects_model');
 		$this->load->model('Users_model');
 		$this->load->library('form_validation');
+		$this->load->model('ApiKeys_model');
 	}
 
-	public function get_all_projects_get()
+//	public function get_all_projects_get()
+//	{
+//
+//		$result = $this->Projects_model->get_projects();
+//		if ($result) {
+//			$this->response(array('status' => 'success', 'result' => $result), RestController::HTTP_OK);
+//		} else {
+//			$this->response(array('status' => 'error', 'error' => 'No projects found'), RestController::HTTP_NOT_FOUND);
+//		}
+//
+//	}
+
+	public function get_project_get($uuid = null)
 	{
 
-		$result = $this->Projects_model->get_projects();
-		if ($result) {
-			$this->response(array('status' => 'success', 'result' => $result), RestController::HTTP_OK);
-		} else {
-			$this->response(array('status' => 'error', 'error' => 'No projects found'), RestController::HTTP_NOT_FOUND);
-		}
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user = $this->ApiKeys_model->get_user($api_key);
+		$user_id = $user->user_id;
 
-	}
-
-	public function get_project_get($id = null)
-	{
-		if ($id === null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide an ID'),
+		log_message('DEBUG','uuid and user id="'.$uuid.$user_id.'"');
+		if ($uuid === null) {
+			$this->response(array('status' => 'error', 'error' => 'Please provide an id'),
 				RestController::HTTP_BAD_REQUEST);
 		} else {
-			$project = $this->Projects_model->get_project($id);
-			if ($project) {
-				$this->response(array('status' => 'success', 'message' => $project), 200);
-			} else {
-				$this->response(array('status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
-			}
+				$project_id = $this->Projects_model->get_project_id($uuid)->id;
+				$project = $this->Projects_model->get_api_project($project_id, $user_id);
+				if ($project) {
+					$this->response(array('code'=>200,'status' => 'success', 'message' => 'Project found successfully.','data'=>$project), RestController::HTTP_OK);
+				} else {
+					$this->response(array('status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
+				}
+
 		}
 	}
 
-	public function get_projects_by_user_get($id = null)
+	public function get_projects_by_user_get()
 	{
-//		$id = $this->get('id');
-		if ($id === null) {
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user = $this->ApiKeys_model->get_user($api_key);
+		$user_id = $user->user_id;
+		log_message('debug', 'user:'.$user_id);
+
+
+		if (empty($api_key)) {
+			$this->response(['status' => 'error', 'message' => 'API key missing'], 400);
+			return;
+		}
+		if ($user_id === null) {
 			$this->response(array('status' => 'error', 'error' => 'Please provide user id'), RestController::HTTP_BAD_REQUEST);
 		} else {
-			$user = $this->Users_model->get_user($id);
+			$user = $this->Users_model->get_user($user_id);
 			if (!$user) {
 				$this->response(array('status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
 
 			} else {
-				$projects = $this->Projects_model->get_projects_by_user($id);
+				$projects = $this->Projects_model->get_projects_by_user($user_id);
 				if ($projects) {
 					$this->response(array('status' => 'success', 'projects' => $projects), RestController::HTTP_OK);
 				} else {
@@ -67,9 +85,11 @@ class APIProjects extends RestController
 
 	}
 
-	public function post_project_post($user_id = null)
+	public function post_project_post()
 	{
-
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user = $this->ApiKeys_model->get_user($api_key);
+		$user_id = $user->user_id;
 		$name = $this->post('name');
 		$description = $this->post('description');
 		if ($user_id === null) {
@@ -113,8 +133,16 @@ class APIProjects extends RestController
 
 	public function patch_project_patch($id = null)
 	{
-		$name = $this->put('name');
-		$description = $this->put('description');
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user = $this->ApiKeys_model->get_user($api_key);
+		$user_id = $user->user_id;
+		if(!$this->Projects_model->belongs_to_user($id, $user_id)) {
+			$this->response(array('status'=>'error', 'error'=>'You do not own this project'), RestController::HTTP_FORBIDDEN);
+			return;
+		}
+		$name = $this->patch('name');
+		$description = $this->patch('description');
+		log_message('debug', 'user:'.$user_id. 'name:'.$name. 'description:'.$description);
 		if ($id === null) {
 			$this->response(array('status' => 'error', 'error' => 'Please provide project id'), RestController::HTTP_BAD_REQUEST);
 		} else {

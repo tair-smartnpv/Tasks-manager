@@ -19,7 +19,6 @@ class projects extends CI_Controller
 
 		$this->load->library('form_validation');
 
-//		$this->load->library('projectsImporter');
 
 
 	}
@@ -31,14 +30,14 @@ class projects extends CI_Controller
 		$data['user_id'] = $user_id;
 		$data['username'] = $_SESSION['username'];
 		$projects = $this->Projects_model->get_projects_by_user($user_id);
-		foreach ($projects as $project) {
-			$progress = $this->Projects_model->count_tasks($project->id);
-			$total = $progress['total'];
-			$completed = $progress['completed'];
-			$project->total_tasks = $total;
-			$project->completed_tasks = $completed;
-			log_message('DEBUG','total' . $total . ' completed' . $completed);
-		}
+//		foreach ($projects as $project) {
+//			$progress = $this->Projects_model->count_tasks($project->id);
+//			$total = $progress['total'];
+//			$completed = $progress['completed'];
+//			$project->total_tasks = $total;
+//			$project->completed_tasks = $completed;
+//			log_message('DEBUG','total' . $total . ' completed' . $completed);
+//		}
 		$data['projects'] = $projects;
 
 		$this->load->view('projects_view', $data);
@@ -83,11 +82,11 @@ class projects extends CI_Controller
 			$description = $this->input->post('description');
 			$created_at = time();
 			$user_id = $_SESSION['user_id'];
-			$id = $this->Projects_model->add_project($name, $description, $created_at,$user_id);
+			$uuid = $this->Projects_model->add_project($name, $description, $created_at,$user_id);
 			echo json_encode(
 				array('status' => 'success',
 
-					'id' => $id,
+					'uuid' => $uuid,
 					'name' => $name,
 					'description' => $description,
 					'created_at' => $created_at,

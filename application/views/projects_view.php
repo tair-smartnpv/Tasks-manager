@@ -88,7 +88,7 @@
   <div id="progress-${project.id}" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 <div class = "project-btn">
- 		<a href='tasks/index/${project.id}' class='btn btn-primary'>משימות</a>
+ 		<a href='tasks/index/${project.uuid}' class='btn btn-primary'>משימות</a>
 <button class="delete-btn" data-id="${project.id}">מחק</button>
       </div>  </div>
     `;

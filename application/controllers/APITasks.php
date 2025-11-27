@@ -64,6 +64,48 @@ class APITasks extends RestController
 		}
 	}
 
+	public function get_tasks_by_order_get($id = null){
+		if ($id === null) {
+			$this->response(array('status' => 'error', 'message' => 'Please provide project id.'), RestController::HTTP_BAD_REQUEST);
+		}
+		else{
+			$project = $this->Projects_model->get_project($id);
+			if (!$project) {
+				$this->response(array('status' => 'error', 'message' => 'Project not found.'), RestController::HTTP_NOT_FOUND);
+			}
+			else{
+				$tasks = $this->Tasks_model->get_tasks_by_order($id);
+				if ($tasks) {
+					$this->response(array('status' => 'success', 'tasks' => $tasks), RestController::HTTP_OK);
+				}
+				else{
+					$this->response(array('status' => 'error', 'message' => 'No tasks found.'), RestController::HTTP_NOT_FOUND);
+				}
+			}
+		}
+	}
+
+	public function get_pending_tasks_get($id = null){
+		if ($id === null) {
+			$this->response(array('status' => 'error', 'message' => 'Please provide project id.'), RestController::HTTP_BAD_REQUEST);
+		}
+		else{
+			$project = $this->Projects_model->get_project($id);
+			if (!$project) {
+				$this->response(array('status' => 'error', 'message' => 'Project not found.'), RestController::HTTP_NOT_FOUND);
+			}
+			else{
+				$tasks = $this->Tasks_model->get_pending_tasks($id);
+				if ($tasks) {
+					$this->response(array('status' => 'success', 'tasks' => $tasks), RestController::HTTP_OK);
+				}
+				else{
+					$this->response(array('status' => 'error', 'message' => 'No tasks found.'), RestController::HTTP_NOT_FOUND);
+				}
+			}
+		}
+	}
+
 	public function post_task_post($project_id = null)
 	{
 		if ($project_id === null) {

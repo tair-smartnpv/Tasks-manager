@@ -4,6 +4,7 @@ class Users_model extends CI_Model {
 	public function __construct(){
 		$this->load->database();
 		$this->load->model('Projects_model');
+		$this->load->model('ApiKeys_model');
 	}
 
 	public function add_user($user, $password, $email){
@@ -44,6 +45,7 @@ class Users_model extends CI_Model {
 			$this->Projects_model->delete_project($project->id);
 		}
 		$this->db->delete('users', array('user_id' => $id));
+		$this->ApiKeys_model->delete_user($id);
 	}
 
 

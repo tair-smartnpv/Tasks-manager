@@ -1,5 +1,5 @@
 <?php
-
+use Ramsey\Uuid\Uuid;
 class Projects_model extends CI_Model
 {
 	public function __construct()
@@ -17,26 +17,62 @@ class Projects_model extends CI_Model
 
 	public function get_projects_by_user($user_id)
 	{
-		$query = $this->db->get_where('projects', array('user_id' => $user_id));
+
+//		$this->db->select('name, description,created_at,uuid');
+		$this->db->select('*');
+		$this->db->from('projects');
+		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
+		$this->db->where('users_projects.user_id', $user_id);
+		$query = $this->db->get();
 		return $query->result();
 
 	}
 
-	public function get_project($id)
+	public function get_project($project_id, $user_id)
 	{
-		return $this->db->get_where('projects', array('id' => $id))->row();
+//		log_message('DEBUG','uuid and user id="'.$uuid.$user_id.'"');
+		$this->db->select('projects.name,projects.id,projects.uuid');
+		$this->db->from('projects');
+		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
+		$this->db->where('projects.id', $project_id);
+		$this->db->where('users_projects.user_id', $user_id);
+		$query = $this->db->get();
+
+		return $query->row();
+	}
+	public function get_api_project($project_id, $user_id){
+		$this->db->select('projects.name,projects.description,projects.created_at,projects.uuid');
+		$this->db->from('projects');
+		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
+		$this->db->where('projects.id', $project_id);
+		$this->db->where('users_projects.user_id', $user_id);
+		$query = $this->db->get();
+
+		return $query->row();
 	}
 
 	public function add_project($name, $description, $created_at, $user_id)
 	{
+		$uuid = Uuid::uuid4()->toString();
+		log_message('debug', 'Adding project ' . $name . ' to ' . $uuid);
+
 		$data =
 			array('name' => $name,
 				'description' => $description,
 				'created_at' => $created_at,
-				'user_id' => $user_id);
+				'user_id' => $user_id,
+				'uuid' => $uuid);
+
 
 		$this->db->insert('projects', $data);
-		return $this->db->insert_id();
+		$project_id = $this->db->insert_id();
+		$relation =array('user_id' => $user_id, 'project_id' => $project_id);
+		$this->db->insert('users_projects', $relation);
+		return $uuid;
+	}
+
+	public function get_project_id($uuid){
+		return $this->db->select('projects.id')->from('projects')->where('uuid', $uuid)->get()->row();
 	}
 
 	public function delete_project($id)
@@ -62,6 +98,17 @@ class Projects_model extends CI_Model
 
 	public function update_project($id, $name, $description){
 		$this->db->where('id', $id)->update('projects', array('name' => $name, 'description' => $description));
+	}
+
+	public  function belongs_to_user($id, $user_id):bool{
+		$project = $this->db->get_where('projects', array('id' => $id))->row();
+		if ($project->user_id == $user_id) return true;
+		return false;
+	}
+
+
+	public function generate_uuid(){
+
 	}
 
 }

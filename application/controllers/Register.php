@@ -50,6 +50,7 @@ class Register extends CI_Controller
 			$email = $this->input->post('email');
 			$pass = $this->input->post('pass');
 			$id = $this->Users_model->add_user($name, $pass, $email);
+
 			$key = bin2hex(random_bytes(20));
 			log_message('DEBUG','API Key:' . $key);
 
