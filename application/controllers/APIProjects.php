@@ -19,17 +19,6 @@ class APIProjects extends RestController
 		$this->load->model('ApiKeys_model');
 	}
 
-//	public function get_all_projects_get()
-//	{
-//
-//		$result = $this->Projects_model->get_projects();
-//		if ($result) {
-//			$this->response(array('status' => 'success', 'result' => $result), RestController::HTTP_OK);
-//		} else {
-//			$this->response(array('status' => 'error', 'error' => 'No projects found'), RestController::HTTP_NOT_FOUND);
-//		}
-//
-//	}
 
 	public function get_project_get($uuid = null)
 	{
@@ -38,18 +27,19 @@ class APIProjects extends RestController
 		$user = $this->ApiKeys_model->get_user($api_key);
 		$user_id = $user->user_id;
 
-		log_message('DEBUG','uuid and user id="'.$uuid.$user_id.'"');
+		log_message('DEBUG', 'uuid and user id="' . $uuid . $user_id . '"');
 		if ($uuid === null) {
 			$this->response(array('status' => 'error', 'error' => 'Please provide an id'),
 				RestController::HTTP_BAD_REQUEST);
 		} else {
-				$project_id = $this->Projects_model->get_project_id($uuid)->id;
-				$project = $this->Projects_model->get_api_project($project_id, $user_id);
-				if ($project) {
-					$this->response(array('code'=>200,'status' => 'success', 'message' => 'Project found successfully.','data'=>$project), RestController::HTTP_OK);
-				} else {
-					$this->response(array('status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
-				}
+			$project_id = $this->Projects_model->get_project_id($uuid);
+			log_message('DEBUG', 'uuid and project_id="' . $uuid . $project_id . '"');
+			$project = $this->Projects_model->get_api_project($project_id, $user_id);
+			if ($project) {
+				$this->response(array('code' => 200, 'status' => 'success', 'message' => 'Project found successfully.', 'data' => $project), RestController::HTTP_OK);
+			} else {
+				$this->response(array('code' => 404, 'status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
+			}
 
 		}
 	}
@@ -57,33 +47,23 @@ class APIProjects extends RestController
 	public function get_projects_by_user_get()
 	{
 		$api_key = $this->input->get_request_header('X-API-KEY');
-		$user = $this->ApiKeys_model->get_user($api_key);
-		$user_id = $user->user_id;
-		log_message('debug', 'user:'.$user_id);
+		$user_id = $this->ApiKeys_model->get_user($api_key)->user_id;
+		log_message('debug', 'user:' . $user_id);
 
+		$user = $this->Users_model->get_user($user_id);
+		if (!$user) {
+			$this->response(array('code' => 404, 'status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
 
-		if (empty($api_key)) {
-			$this->response(['status' => 'error', 'message' => 'API key missing'], 400);
-			return;
-		}
-		if ($user_id === null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide user id'), RestController::HTTP_BAD_REQUEST);
 		} else {
-			$user = $this->Users_model->get_user($user_id);
-			if (!$user) {
-				$this->response(array('status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
-
+			$projects = $this->Projects_model->get_projects_by_user_api($user_id);
+			if ($projects) {
+				$this->response(array('code' => 200, 'status' => 'success', 'message' => 'Get projects successfully.', 'data' => $projects), RestController::HTTP_OK);
 			} else {
-				$projects = $this->Projects_model->get_projects_by_user($user_id);
-				if ($projects) {
-					$this->response(array('status' => 'success', 'projects' => $projects), RestController::HTTP_OK);
-				} else {
-					$this->response(array('status' => 'error', 'error' => 'No projects were found'), RestController::HTTP_NOT_FOUND);
-				}
+				$this->response(array('code' => 404, 'status' => 'error', 'error' => 'No projects were found'), RestController::HTTP_NOT_FOUND);
 			}
 		}
-
 	}
+
 
 	public function post_project_post()
 	{
@@ -92,65 +72,65 @@ class APIProjects extends RestController
 		$user_id = $user->user_id;
 		$name = $this->post('name');
 		$description = $this->post('description');
-		if ($user_id === null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide user id'), RestController::HTTP_BAD_REQUEST);
+		$user = $this->Users_model->get_user($user_id);
+		if ($description === null) {
+			$description = '';
+		}
+		if (!$user) {
+			$this->response(array('status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
 		} else {
-			$user = $this->Users_model->get_user($user_id);
-			if (!$user) {
-				$this->response(array('status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
+			if ($name === null) {
+				$this->response(array('status' => 'error', 'error' => 'Missing parameters'), RestController::HTTP_BAD_REQUEST);
 			} else {
-				if ($name === null || $description === null) {
-					$this->response(array('status' => 'error', 'error' => 'Missing parameters'), RestController::HTTP_BAD_REQUEST);
+				$data = array('name' => $name, 'description' => $description);
+				$this->form_validation->set_data($data);
+				$this->form_validation->set_rules('name', 'Name', 'required|min_length[3]|max_length[20]|regex_match[/^[\p{L}\p{N}\s]+$/u]',
+
+					array('required' => 'יש להזין שם לפרויקט',
+						'min_length' => 'השם צריך להכיל לפחות 3 תווים',
+						'max_length' => 'השם צריך להכיל עד 20 תווים',
+						'regex_match' => 'השם צריך להכיל רק תווים מותרים')
+				);
+				$this->form_validation->set_rules('description', 'Description', 'max_length[255]|regex_match[/^[\p{L}\p{N}\s]+$/u]',
+
+					array('max_length' => 'התיאור יכול להכיל עד 255 תווים.',
+						'regex_match' => 'התיאור צריך להכיל רק תווים מותרים')
+				);
+				if ($this->form_validation->run() == FALSE) {
+					$this->response(array('code' => 422, 'status' => 'error', 'error' => validation_errors()), 422);
+
 				} else {
-					$data = array('name' => $name, 'description' => $description);
-					$this->form_validation->set_data($data);
-					$this->form_validation->set_rules('name', 'Name', 'required|min_length[3]|max_length[20]|regex_match[/^[\p{L}\p{N}\s]+$/u]',
-
-						array('required' => 'יש להזין שם לפרויקט',
-							'min_length' => 'השם צריך להכיל לפחות 3 תווים',
-							'max_length' => 'השם צריך להכיל עד 20 תווים',
-							'regex_match' => 'השם צריך להכיל רק תווים מותרים')
-					);
-					$this->form_validation->set_rules('description', 'Description', 'max_length[255]|regex_match[/^[\p{L}\p{N}\s]+$/u]',
-
-						array('max_length' => 'התיאור יכול להכיל עד 255 תווים.',
-							'regex_match' => 'התיאור צריך להכיל רק תווים מותרים')
-					);
-					if ($this->form_validation->run() == FALSE) {
-						$this->response(array('status' => 'error', 'error' => validation_errors()), 422);
-
-					} else {
-						$created_at = time();
-						$id = $this->Projects_model->add_project($name, $description, $created_at, $user_id);
-						$this->response(array('status' => 'success', 'message' => 'Project created', 'project id' => $id), RestController::HTTP_CREATED);
-					}
+					$created_at = time();
+					$id = $this->Projects_model->add_project($name, $description, $created_at, $user_id);
+					$this->response(array('code' => 200, 'status' => 'success', 'message' => 'Project created successfully.', 'data' => array('uuid' => $id,
+						'name' => $name, 'description' => $description)), RestController::HTTP_CREATED);
 				}
 			}
 		}
-
 	}
 
 
-	public function patch_project_patch($id = null)
+	public function patch_project_patch($uuid = null)
 	{
 		$api_key = $this->input->get_request_header('X-API-KEY');
-		$user = $this->ApiKeys_model->get_user($api_key);
-		$user_id = $user->user_id;
-		if(!$this->Projects_model->belongs_to_user($id, $user_id)) {
-			$this->response(array('status'=>'error', 'error'=>'You do not own this project'), RestController::HTTP_FORBIDDEN);
-			return;
-		}
+		$user_id = $this->ApiKeys_model->get_user($api_key)->user_id;
+
 		$name = $this->patch('name');
 		$description = $this->patch('description');
-		log_message('debug', 'user:'.$user_id. 'name:'.$name. 'description:'.$description);
-		if ($id === null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide project id'), RestController::HTTP_BAD_REQUEST);
+		log_message('debug', 'user:' . $user_id . ' name: ' . $name . ' description: ' . $description . ' uuid: ' . $uuid);
+		if ($uuid === null) {
+			$this->response(array('code' => 404, 'status' => 'error', 'error' => 'Please provide project id'), RestController::HTTP_BAD_REQUEST);
 		} else {
-			$project = $this->Projects_model->get_project($id);
+
+			$project_id = $this->Projects_model->get_project_id($uuid);
+			$project = $this->Projects_model->get_project($project_id, $user_id);
 			if (!$project) {
-				$this->response(array('status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
+				$this->response(array('code' => 404, 'status' => 'error', 'error' => 'Project not found.'), RestController::HTTP_NOT_FOUND);
 			} else {
-				if ($name === null || $description === null) {
+				if ($description === null) {
+					$description = '';
+				}
+				if ($name === null) {
 					$this->response(array('status' => 'error', 'error' => 'missing parameters'), RestController::HTTP_BAD_REQUEST);
 				} else {
 					$data = array('name' => $name, 'description' => $description);
@@ -168,11 +148,12 @@ class APIProjects extends RestController
 							'regex_match' => 'התיאור צריך להכיל רק תווים מותרים')
 					);
 					if ($this->form_validation->run() == FALSE) {
-						$this->response(array('status' => 'error', 'error' => validation_errors()), 422);
+						$this->response(array('code' => 422, 'status' => 'error', 'error' => validation_errors()), 422);
 					} else {
 						$updated_at = time();
-						$this->Projects_model->update_project($id, $name, $description);
-						$this->response(array('status' => 'success', 'message' => 'Project updated successfully.', 'project_id' => $id, 'updated_at' => $updated_at),
+						$this->Projects_model->update_project($project_id, $name, $description);
+						$this->response(array('code' => 200, 'status' => 'success', 'message' => 'Project updated successfully.', 'data' =>
+							array('project_uuid' => $uuid, 'name' => $name, 'description' => $description, 'updated_at' => $updated_at)),
 							RestController::HTTP_OK);
 					}
 				}
@@ -180,18 +161,21 @@ class APIProjects extends RestController
 		}
 	}
 
-	public function delete_project_delete($id){
-		if ($id == null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide an ID'), RestController::HTTP_BAD_REQUEST);
-		}
-		else{
-			$project = $this->Projects_model->get_project($id);
+	public function delete_project_delete($uuid)
+	{
+
+		if ($uuid == null) {
+			$this->response(array('code'=>400,'status' => 'error', 'error' => 'Please provide an ID'), RestController::HTTP_BAD_REQUEST);
+		} else {
+			$api_key = $this->input->get_request_header('X-API-KEY');
+			$user_id = $this->ApiKeys_model->get_user($api_key)->user_id;
+			$project_id = $this->Projects_model->get_project_id($uuid);
+			$project = $this->Projects_model->get_project($project_id, $user_id);
 			if (!$project) {
-				$this->response(array('status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
-			}
-			else{
-				$this->Projecrs_model->delete_project($id);
-				$this->response(array('status' => 'success', 'message' => 'Project deleted successfully.'), RestController::HTTP_OK);
+				$this->response(array('code'=>404,'status' => 'error', 'error' => 'Project not found'), RestController::HTTP_NOT_FOUND);
+			} else {
+				$this->Projects_model->delete_project($project_id);
+				$this->response(array('code'=>200,'status' => 'success', 'message' => 'Project deleted successfully.'), RestController::HTTP_OK);
 			}
 		}
 	}

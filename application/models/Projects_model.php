@@ -27,7 +27,18 @@ class Projects_model extends CI_Model
 		return $query->result();
 
 	}
+	public function get_projects_by_user_api($user_id)
+	{
 
+//		$this->db->select('name, description,created_at,uuid');
+		$this->db->select('name,description,uuid');
+		$this->db->from('projects');
+		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
+		$this->db->where(array('users_projects.user_id'=> $user_id, 'projects.is_deleted' => 0));
+		$query = $this->db->get();
+		return $query->result();
+
+	}
 	public function get_project($project_id, $user_id)
 	{
 //		log_message('DEBUG','uuid and user id="'.$uuid.$user_id.'"');
@@ -36,6 +47,7 @@ class Projects_model extends CI_Model
 		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
 		$this->db->where('projects.id', $project_id);
 		$this->db->where('users_projects.user_id', $user_id);
+		$this->db->where('projects.is_deleted', 0);
 		$query = $this->db->get();
 
 		return $query->row();
@@ -46,8 +58,8 @@ class Projects_model extends CI_Model
 		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
 		$this->db->where('projects.id', $project_id);
 		$this->db->where('users_projects.user_id', $user_id);
-		$query = $this->db->get();
 
+		$query = $this->db->get();
 		return $query->row();
 	}
 
@@ -82,7 +94,7 @@ class Projects_model extends CI_Model
 			$this->Tasks_model->delete_task($task->id);
 		}
 		$this->db->where(array('id' => $id))->update('projects',array('is_deleted' => 1));
-		$this->db->where(array('project_id' => $id))->delete('users_projects');
+//		$this->db->where(array('project_id' => $id))->delete('users_projects');
 
 
 	}
@@ -102,11 +114,12 @@ class Projects_model extends CI_Model
 		$this->db->where('id', $id)->update('projects', array('name' => $name, 'description' => $description));
 	}
 
-	public  function belongs_to_user($id, $user_id):bool{
-		$project = $this->db->get_where('projects', array('id' => $id))->row();
-		if ($project->user_id == $user_id) return true;
-		return false;
-	}
+//	public  function belongs_to_user($uuid, $user_id):bool
+//	{
+//		$project_id = $this->get_project_id($uuid);
+//		if($this->db->where(array('user_id'=> $user_id,'project_id'=>$project_id))->count_all_results('users_projects') == 0){return false;}
+//		return true;
+//	}
 
 
 	public function generate_uuid(){
