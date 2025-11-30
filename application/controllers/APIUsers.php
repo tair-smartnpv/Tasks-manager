@@ -14,6 +14,7 @@ class APIUsers extends RestController
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('Users_model');
+		$this->load->model('ApiKeys_model');
 	}
 
 	public function get_all_users_get()
@@ -83,18 +84,7 @@ class APIUsers extends RestController
 				return;
 			} else {
 				$id = $this->Users_model->add_user($name, $password, $email);
-				$key = bin2hex(random_bytes(20));
-				log_message('DEBUG', 'API Key:' . $key);
-
-				$this->db->insert('keys', array(
-					'user_id' => $id,
-					'key' => $key,
-					'level' => 1,
-					'ignore_limits' => 0,
-					'is_private_key' => 0,
-					'date_created' => time()
-				));
-
+				$key = $this->ApiKeys_model->add_user($id);
 				log_message('DEBUG', $name . $email . $password);
 				$this->response(array('code' => 200,
 					'status' => 'success', 'message' => 'User created successfully.', 'data' => array(

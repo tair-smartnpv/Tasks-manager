@@ -10,6 +10,7 @@ class Register extends CI_Controller
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
 		$this->load->model('Users_model');
+		$this->load->model('ApiKeys_model');
 
 
 	}
@@ -51,17 +52,7 @@ class Register extends CI_Controller
 			$pass = $this->input->post('pass');
 			$id = $this->Users_model->add_user($name, $pass, $email);
 
-			$key = bin2hex(random_bytes(20));
-			log_message('DEBUG','API Key:' . $key);
-
-			$this->db->insert('keys', array(
-				'user_id' => $id,
-				'key' => $key,
-				'level' => 1,
-				'ignore_limits' => 0,
-				'is_private_key' => 0,
-				'date_created' => time()
-			));
+			$key = $this->ApiKeys_model->add_user($id);
 
 			echo json_encode(array('status' => 'success', 'user_id' => $id, 'key' => $key)
 			);
