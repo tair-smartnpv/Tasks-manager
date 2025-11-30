@@ -17,7 +17,7 @@ class Tasks_model extends CI_Model
 
 	public function get_task($id)
 	{
-		return $this->db->get_where('tasks', array('id' => $id))->row();
+		return $this->db->select('title,status,deadline')->from('tasks')->where('id', $id)->get()->result();
 	}
 
 	public function add_task($title, $project_id, $created_at, $deadline)
@@ -47,6 +47,10 @@ class Tasks_model extends CI_Model
 		$query = $this->db->get_where('tasks', array('project_id=' => $p_id, 'is_deleted' => 0));
 
 		return $query->result();
+	}
+
+	public function get_tasks_api($p_id){
+		return $this->db->select('title,status,deadline')->from('tasks')->where('project_id', $p_id)->get()->result();
 	}
 
 	public function update_task_status($id, $status)
@@ -90,7 +94,7 @@ class Tasks_model extends CI_Model
 		return $this->db->get_where('tasks', array('project_id' => $p_id, 'status' => 'pending'))->result();
 	}
 
-//public function get_project_name($p_id){
-//		$query = $this ->db->
-//}
+public function get_project_id($t_id){
+		return $this ->db->select('project_id')->where('id', $t_id)->get('tasks')->row()->project_id;
+}
 }
