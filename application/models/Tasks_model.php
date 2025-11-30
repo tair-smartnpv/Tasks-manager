@@ -37,14 +37,14 @@ class Tasks_model extends CI_Model
 
 	public function delete_task($id)
 	{
-		$this->db->delete('tasks', array('id' => $id));
+		$this->db->where( array('id' => $id))->update('tasks',array('is_deleted' => 1));
 		return true;
 	}
 
 
 	public function get_tasks_by_project($p_id)
 	{
-		$query = $this->db->get_where('tasks', array('project_id=' => $p_id));
+		$query = $this->db->get_where('tasks', array('project_id=' => $p_id, 'is_deleted' => 0));
 
 		return $query->result();
 	}
@@ -74,7 +74,7 @@ class Tasks_model extends CI_Model
 
 	public function delete_tasks_by_project($p_id)
 	{
-		$this->db->delete('tasks', array('project_id' => $p_id));
+		$this->db->where( array('project_id' => $p_id))->update( 'tasks', array('is_deleted' => 1));
 		return true;
 	}
 

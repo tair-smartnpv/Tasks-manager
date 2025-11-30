@@ -22,7 +22,7 @@ class Projects_model extends CI_Model
 		$this->db->select('*');
 		$this->db->from('projects');
 		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
-		$this->db->where('users_projects.user_id', $user_id);
+		$this->db->where(array('users_projects.user_id'=> $user_id, 'projects.is_deleted' => 0));
 		$query = $this->db->get();
 		return $query->result();
 
@@ -31,7 +31,7 @@ class Projects_model extends CI_Model
 	public function get_project($project_id, $user_id)
 	{
 //		log_message('DEBUG','uuid and user id="'.$uuid.$user_id.'"');
-		$this->db->select('projects.name,projects.id,projects.uuid');
+		$this->db->select('projects.name,projects.uuid');
 		$this->db->from('projects');
 		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
 		$this->db->where('projects.id', $project_id);
@@ -72,7 +72,7 @@ class Projects_model extends CI_Model
 	}
 
 	public function get_project_id($uuid){
-		return $this->db->select('projects.id')->from('projects')->where('uuid', $uuid)->get()->row();
+		return $this->db->select('projects.id')->from('projects')->where('uuid', $uuid)->get()->row()->id;
 	}
 
 	public function delete_project($id)
@@ -81,7 +81,9 @@ class Projects_model extends CI_Model
 		foreach ($tasks as $task) {
 			$this->Tasks_model->delete_task($task->id);
 		}
-		$this->db->delete('projects', array('id' => $id));
+		$this->db->where(array('id' => $id))->update('projects',array('is_deleted' => 1));
+		$this->db->where(array('project_id' => $id))->delete('users_projects');
+
 
 	}
 

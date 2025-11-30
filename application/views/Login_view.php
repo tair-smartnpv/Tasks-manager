@@ -63,7 +63,7 @@
 					success: function (response) {
 						console.log("post ", response.status, response.message);
 						if (response.status === 'success') {
-							window.location.href = "Projects";
+							window.location.href = '<?php echo site_url("Projects"); ?>';
 						}
 						if (response.status === 'fail') {
 							console.log(response.message);
@@ -87,7 +87,7 @@
 			}
 		)
 		$("#register").on("click", function () {
-			window.location.href = "Register";
+			window.location.href = "<?php echo site_url("Register")?>";
 		})
 
 	})

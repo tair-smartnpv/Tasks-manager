@@ -80,16 +80,16 @@
 <script>
 	function renderProject(project) {
 		return `
-        <div class="project" id="project-${project.id}">
+        <div class="project" id="project-${project.uuid}">
             <h2>${project.name}</h2>
 				<p> ${project.description}</p>
 
 <div class="progress">
-  <div id="progress-${project.id}" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+  <div id="progress-${project.uuid}" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 <div class = "project-btn">
  		<a href='tasks/index/${project.uuid}' class='btn btn-primary'>משימות</a>
-<button class="delete-btn" data-id="${project.id}">מחק</button>
+<button class="delete-btn" data-id="${project.uuid}">מחק</button>
       </div>  </div>
     `;
 	}
@@ -150,7 +150,7 @@
 
 
 			$.ajax({
-				url: 'Projects/add',
+				url: '<?php echo site_url("Projects/add")?>',
 				type: 'POST',
 				dataType: 'json',
 				data: {
@@ -186,13 +186,14 @@
 		//delete project
 		$(document).on("click", ".delete-btn", async function () {
 			const projectId = $(this).data('id');
+			console.log(projectId)
 			const $projectDiv = $('#project-' + projectId);
 			const confirm = await askConfirmation();
 			if (!confirm) return;
 			$.ajax({
 				url: '<?php echo site_url("Projects/delete"); ?>',// + projectId,
 				method: 'POST',
-				data: {id: projectId},
+				data: {uuid: projectId},
 				dataType: 'json',
 				success: function (response) {
 					console.log("deleted");

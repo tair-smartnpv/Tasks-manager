@@ -23,7 +23,7 @@ class Tasks extends CI_Controller
 	public function index($uuid)
 	{
 		$user_id = $_SESSION['user_id'];
-		$project_id= $this->Projects_model->get_project_id($uuid)->id;
+		$project_id= $this->Projects_model->get_project_id($uuid);
 
 		$project = $this->Projects_model->get_project($project_id,$user_id);
 		log_message('DEBUG','Projects: '. json_encode($project));
@@ -35,14 +35,17 @@ class Tasks extends CI_Controller
 		}
 		else {
 			$data['project'] = $project;
-			$data['project_id'] = $project_id;
+			$data['project_uuid'] = $uuid;
 
 			$this->load->view('Tasks_view', $data);
 		}
 	}
 
-	public function get_by_project($project_id)
+	public function get_by_project($project_uuid)
+
 	{
+
+		$project_id= $this->Projects_model->get_project_id($project_uuid);
 		$tasks = $this->Tasks_model->get_tasks_by_project($project_id);
 		echo json_encode($tasks);
 
@@ -67,7 +70,8 @@ class Tasks extends CI_Controller
 			$title = $this->input->post('title');
 			$created_at = time();
 			$task_status = 'pending';
-			$project_id = $this->input->post('p_id');
+			$project_uuid = $this->input->post('p_uuid');
+			$project_id= $this->Projects_model->get_project_id($project_uuid);
 			$date = $this->input->post('date');
 			$deadline = strtotime($date);
 			$id = $this->Tasks_model->add_task($title, $project_id, $created_at, $deadline);
@@ -77,7 +81,7 @@ class Tasks extends CI_Controller
 				'title' => $title,
 				'created_at' => $created_at,
 				'task_status' => $task_status,
-				'project_id' => $project_id,
+				'project_uuid' => $project_uuid,
 				'id' => $id,
 				'deadline' => $deadline
 			));

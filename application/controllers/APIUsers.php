@@ -21,30 +21,33 @@ class APIUsers extends RestController
 		log_message('DEBUG', 'get_all_users_get()');
 		$result = $this->Users_model->get_users_list();
 		if ($result) {
-			$this->response(array('status' => 'success', 'message' => $result), RestController::HTTP_OK);
+			$this->response(array('code' => 200, 'status' => 'success', 'message' => 'Get users successfully', 'data' => $result), RestController::HTTP_OK);
 		} else {
-			$this->response(array('status' => 'error', 'error' => 'No users found'), RestController::HTTP_NOT_FOUND);
+			$this->response(array('code' => 404, 'status' => 'error', 'error' => 'No users found'), RestController::HTTP_NOT_FOUND);
 
 		}
 
 	}
 
-	public function get_user_get($id = null)
+	public function get_user_get()
 	{
-		log_message('DEBUG', 'api' . $id);
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user_id = $this->ApiKeys_model->get_user($api_key)->user_id;
 
-		if ($id === null) {
-			$this->response(
-				array('status' => 'error', 'error' => 'Please provide an ID'),
-				RestController::HTTP_BAD_REQUEST
-			);
-			return;
-		}
-		$user = $this->Users_model->get_user($id);
+		log_message('DEBUG', 'api' . $user_id);
+
+//		if ($id === null) {
+//			$this->response(
+//				array('code'=>400,'status' => 'error', 'error' => 'Please provide an ID'),
+//				RestController::HTTP_BAD_REQUEST
+//			);
+//			return;
+//		}
+		$user = $this->Users_model->get_user($user_id);
 		if (!$user) {
-			$this->response(array('status' => 'error', 'message' => 'User not found'), RestController::HTTP_NOT_FOUND);
+			$this->response(array('code' => 404, 'status' => 'error', 'message' => 'User not found'), RestController::HTTP_NOT_FOUND);
 		} else {
-			$this->response(array('status' => 'success', 'user' => $user), RestController::HTTP_OK);
+			$this->response(array('code' => 200, 'status' => 'success', 'message' => 'Get user successfully.', 'data' => $user), RestController::HTTP_OK);
 
 		}
 	}
@@ -76,7 +79,7 @@ class APIUsers extends RestController
 			);
 
 			if ($this->form_validation->run() == FALSE) {
-				$this->response(array('status' => 'error', 'error' => validation_errors()), 422);
+				$this->response(array('code' => 422, 'status' => 'error', 'error' => validation_errors()), 422);
 				return;
 			} else {
 				$id = $this->Users_model->add_user($name, $password, $email);
@@ -93,73 +96,70 @@ class APIUsers extends RestController
 				));
 
 				log_message('DEBUG', $name . $email . $password);
-				$this->response(array('status' => 'success', 'message' => 'User created successfully.', 'id' => $id, 'key' => $key), RestController::HTTP_CREATED);
+				$this->response(array('code' => 200,
+					'status' => 'success', 'message' => 'User created successfully.', 'data' => array(
+						'name' => $name, 'email' => $email, 'key' => $key)), RestController::HTTP_CREATED);
 			}
 
-
-//			$ID = $this->Register_model->addUser($name, $password, $email);
-//			log_message('DEBUG', $name . $email . $password);
-//			$response = array('status' => 200, 'message' => "User created successfully", 'id' => $ID);
-//			$this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode($response));
 		}
 
 	}
 
-	public function patch_user_patch($id = null)
+	public function patch_user_patch()
 	{
-		if ($id == null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide an ID'), RestController::HTTP_BAD_REQUEST);
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user_id = $this->ApiKeys_model->get_user($api_key)->user_id;
+
+		$name = $this->patch('name');
+		$email = $this->patch('email');
+		$password = $this->patch('password');
+		if ($name === null || $email === null || $password === null) {
+			$this->response(array('status' => 'error', 'error' => 'Please fill all fields'), RestController::HTTP_BAD_REQUEST);
 		} else {
-			$name = $this->patch('name');
-			$email = $this->patch('email');
-			$password = $this->patch('password');
-			if ($name === null || $email === null || $password === null) {
-				$this->response(array('status' => 'error', 'error' => 'Please fill all fields'), RestController::HTTP_BAD_REQUEST);
+			$data = array('name' => $name, 'email' => $email, 'password' => $password);
+			log_message('DEBUG', $name . $email . $password);
+			$this->form_validation->set_data($data);
+
+			$this->form_validation->set_rules('name', 'Name', 'required', array('required' => 'חסר שם.'));;
+			$this->form_validation->set_rules('email', 'Email', 'required|valid_email|callback_unique_email',
+				array('required' => 'חסר אימייל',
+					'valid_email' => 'כתובת לא חוקית')
+			);
+			$this->form_validation->set_rules(
+				'password',
+				'Password',
+				'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*\d).+$/]',
+
+				array('required' => 'חסר סיסמא',
+					'min_length' => 'הסיסמא חייבת להכי לפחות 8 תווים',
+					'regex_match' => 'הסיסמא חייבת להכיל אותיות ומספרים')
+			);
+			if ($this->form_validation->run() == FALSE) {
+				$this->response((array('code' => 422, 'status' => 'error', 'error' => validation_errors())), 422);
+				return;
+
 			} else {
-				$data = array('name' => $name, 'email' => $email, 'password' => $password);
-				log_message('DEBUG', $name . $email . $password);
-				$this->form_validation->set_data($data);
-
-				$this->form_validation->set_rules('name', 'Name', 'required', array('required' => 'חסר שם.'));;
-				$this->form_validation->set_rules('email', 'Email', 'required|valid_email',
-					array('required' => 'חסר אימייל',
-						'valid_email' => 'כתובת לא חוקית')
-				);
-				$this->form_validation->set_rules(
-					'password',
-					'Password',
-					'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*\d).+$/]',
-
-					array('required' => 'חסר סיסמא',
-						'min_length' => 'הסיסמא חייבת להכי לפחות 8 תווים',
-						'regex_match' => 'הסיסמא חייבת להכיל אותיות ומספרים')
-				);
-				if ($this->form_validation->run() == FALSE) {
-					$this->response((array('status' => 'error', 'error' => validation_errors())), 422);
-					return;
-
-				} else {
-					$user = $this->Users_model->update_user($id, $name, $password, $email);
-					$this->response(array('status' => 'success', 'message' => 'User updated successfully.', 'id' => $id), RestController::HTTP_OK);
-				}
-
+				$user = $this->Users_model->update_user($user_id, $name, $password, $email);
+				$this->response(array('code' => 200, 'status' => 'success', 'message' => 'User updated successfully.',
+					'data' => array('name' => $name, 'email' => $email)), RestController::HTTP_OK);
 			}
+
 		}
 	}
 
-	public function delete_user_delete($id = null){
-		if ($id == null) {
-			$this->response(array('status' => 'error', 'error' => 'Please provide an ID'), RestController::HTTP_BAD_REQUEST);
-		}
-		else{
-			$user = $this->Users_model->get_user($id);
-			if (!$user) {
-				$this->response(array('status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
-			}
-			else{
-				$this->Users_model->delete_user($id);
-				$this->response(array('status' => 'success', 'message' => 'User deleted successfully.'), RestController::HTTP_OK);
-			}
+
+	public function delete_user_delete()
+	{
+		$api_key = $this->input->get_request_header('X-API-KEY');
+		$user_id = $this->ApiKeys_model->get_user($api_key)->user_id;
+
+		$user = $this->Users_model->get_user($user_id);
+		if (!$user) {
+			$this->response(array('code'=>404,'status' => 'error', 'error' => 'User not found'), RestController::HTTP_NOT_FOUND);
+		} else {
+			$this->Users_model->delete_user($user_id);
+			$this->response(array('code'=>200,'status' => 'success', 'message' => 'User deleted successfully.'), RestController::HTTP_OK);
+
 		}
 	}
 
@@ -167,7 +167,7 @@ class APIUsers extends RestController
 	public function unique_email($email)
 	{
 		if ($this->Users_model->check_email($email)) {
-			$this->form_validation->set_message('unique_email', 'האימייל כבר קיים במערכת');
+			$this->form_validation->set_message('unique_email', 'נראה שאתה משתמש רשום.');
 			return FALSE;
 		} else {
 			return true;

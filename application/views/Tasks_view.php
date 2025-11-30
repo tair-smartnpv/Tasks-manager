@@ -98,7 +98,7 @@
 </div>
 
 <script>
-	let project_id = "<?php echo $project_id; ?>";
+	let project_uuid = "<?php echo $project_uuid; ?>";
 
 	function updateCounters() {
 
@@ -158,7 +158,7 @@
 
 		//load all by id
 		$.ajax({
-			url: "<?php echo site_url('Tasks/get_by_project/'); ?>" + project_id,
+			url: "<?php echo site_url('Tasks/get_by_project/'); ?>" + project_uuid,
 			type: 'GET',
 			success: function (response) {
 				console.log("response", response);
@@ -189,7 +189,7 @@
 				dataType: 'json',
 				data: {
 					title: title,
-					p_id: project_id,
+					p_uuid: project_uuid,
 					date: date
 
 				},

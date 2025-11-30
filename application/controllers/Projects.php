@@ -102,9 +102,12 @@ class projects extends CI_Controller
 
 	public function delete()
 	{
-		$id = $this->input->post('id');
+		$uuid = $this->input->post('uuid');
+		log_message('DEBUG','delete project_uuid' . $uuid);
+		$id = $this->Projects_model->get_project_id($uuid);
+		log_message('DEBUG','delete project_id' . $id);
 		$this->Projects_model->delete_project($id);
-		$this->Tasks_model->delete_tasks_by_project($id);
+//		$this->Tasks_model->delete_tasks_by_project($id);
 		echo json_encode(array("status" => "success"));
 
 

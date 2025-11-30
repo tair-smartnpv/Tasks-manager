@@ -20,7 +20,7 @@ class Users_model extends CI_Model {
 		return $this->db->get_where('users', array('email' => $email))->num_rows()>0;
 	}
 	public function get_user($id){
-		$query = $this->db->get_where('users', array('user_id' => $id));
+		$query = $this->db->select('username,email')->from('users')->where (array('user_id' => $id))->get();
 		return $query->row();
 	}
 
@@ -33,10 +33,11 @@ class Users_model extends CI_Model {
 	}
 
 	public function get_users_list(){
-		$result = $this->db->get('users')->result();
+		$query = $this->db->select('username, email')->get('users');
+
 //		log_message('debug', $result);
 		log_message('DEBUG', 'getUsersList()');
-		return $result;
+		return $query->result();
 	}
 
 	public function delete_user($id){
@@ -44,7 +45,7 @@ class Users_model extends CI_Model {
 		foreach ($projects as $project){
 			$this->Projects_model->delete_project($project->id);
 		}
-		$this->db->delete('users', array('user_id' => $id));
+		$this->db->where( array('user_id' => $id))->update('users',array('is_deleted' => 1));
 		$this->ApiKeys_model->delete_user($id);
 	}
 

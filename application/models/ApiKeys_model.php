@@ -16,7 +16,7 @@ class ApiKeys_model extends CI_Model
 
 	public function delete_user($user_id)
 	{
-		$this->db->delete('keys', array('user_id' => $user_id));
+		$this->db->where('user_id', $user_id)->update('keys',array('is_deleted' => 1));
 
 	}
 	public function add_users($apikey){
