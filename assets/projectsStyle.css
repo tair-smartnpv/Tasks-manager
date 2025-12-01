@@ -55,25 +55,27 @@
 .modal-btn {
 	background-color: #006eff;
 	color: white;
-	padding: 10px 20px;
+	padding: 1%;
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;
-	margin-right: 300px; /* זז שמאלה */
+	/*margin-right: 300px;*/
+	margin-bottom: 1%;
 	float: left;
 
 }
 
 
 .project-list {
-	padding: 50px 50px 50px 50px;
+	padding: 3% ;
 	display: flex;
-	gap: 40px;
+	gap: 2%;
 	flex-wrap: wrap;
 
 }
 
 .project {
+	margin: 2%;
 	width: 250px;
 	padding: 20px;
 	background: #f4f4f4;

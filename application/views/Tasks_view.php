@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<?= base_url('assets/tasksStyle.css') ?>">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<style></style>
 </head>
@@ -161,7 +162,7 @@
 			url: "<?php echo site_url('Tasks/get_by_project/'); ?>" + project_uuid,
 			type: 'GET',
 			success: function (response) {
-				console.log("response", response);
+				// console.log("response", response);
 				let tasks = JSON.parse(response);
 				for (let i = 0; i < tasks.length; i++) {
 					const taskHtml = renderTasks(tasks[i]);

@@ -56,12 +56,12 @@ class Register extends CI_Controller
 			$pass = $this->input->post('pass');
 			if ($this->Users_model->email_exist($email)) {
 				log_message("DEBUG", 'Email exist');
-				$this->session->set_flashdata('message', 'חשבון קיים. באפשרותך להתחבר');
-//				redirect('Login/index');
 				echo json_encode(array('status' => 'error','message'=>'email already exist'));
 			} else {
 				$id = $this->Users_model->add_user($name, $pass, $email);
-				$this->send_email($email);
+				$message = '<h2>תודה שנרשמת!</h2>';
+				$subject = 'אישור הרשמה';
+				$this->send_email($email,$subject,$message);
 
 
 				$key = $this->ApiKeys_model->add_user($id);
@@ -82,16 +82,16 @@ class Register extends CI_Controller
 
 	}
 
-	public function send_email($email)
+	public function send_email($email,$subject,$message)
 	{
 		$this->email->to($email);
-		$this->emil->from('tair@test.com');
-		$this->email->subject();
-		$this->email->message();
+		$this->email->from('tair@test.com');
+		$this->email->subject($subject);
+		$this->email->message($message);
 		if ($this->email->send()) {
 			return true;
 		} else {
-			log_message('error', $this->email->print_debugger());
+			log_message('DEBUG', 'Email problem'.$this->email->print_debugger());
 			return false;
 		}
 	}

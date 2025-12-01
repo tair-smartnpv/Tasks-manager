@@ -12,36 +12,16 @@
 }
 
 .tasks-list{
-	padding: 10px 80px 50px 80px;
+	padding: 1% 5% 2% 5%;
 	/*margin: 50px;*/
 }
 .tasks-list h3{
 	font-weight: normal;
-	margin: 30px;
+	margin:2%;
 
 }
 
-/*.completed{*/
-/*	padding: 10px 50px 50px;*/
-/*}*/
-/*.completed h3{*/
-/*	font-weight: normal;*/
-/*	margin: 30px;*/
 
-/*}*/
-
- .adder{
-	width: 60%;
-	/* height: 20px; */
-	margin : 40px ;
-
-	border: 1px solid rgb(149, 149, 150);
-	border-radius: 8px;
-	padding: 10px;
- }
- .adder p{
-	 font-size: larger;
- }
 
 
  #open-tasks{
@@ -76,23 +56,23 @@
     /*padding: 12px 16px;*/
     /*border-radius: 10px;*/
     /*border: 1px solid #ddd;*/
-    margin-bottom: 15px;
+    /*margin-bottom: 15px;*/
 
     /*display: flex;*/
     justify-content: space-between; /* כותרת מצד ימין, כפתורים מצד שמאל */
-    /*align-items: center;*/
+    align-items: center;
 	/*	 background: #ffffff;*/
 		 border-radius: 12px;
-		 padding: 15px 20px;
+		 padding: 1% 2%;
 		 box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 		 display: flex;
-		 align-items: flex-start;
-		 gap: 15px;
-		 position: relative;
+		 /*align-items: flex-start;*/
+		 /*gap: 15px;*/
+		 /*position: relative;*/
 
 }
  .task h4{
-	 /*font-size: small;*/
+	 /*font-size: ;*/
  }
  /*.task.completed h3{*/
 	/* text-decoration: line-through;*/
@@ -104,6 +84,7 @@
 	 color: darkred;
 	 border: 2px solid darkred ;
 	 border-radius: 5px;
+	 /*float: left;*/
  }
 
 h4{
@@ -124,6 +105,7 @@ h4{
 
 .edit-btn{
 	border-radius: 5px;
+	/*margin: 1%;*/
 }
 #edit-task{
 	background-color: #ffffff;

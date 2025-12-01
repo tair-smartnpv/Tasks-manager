@@ -9,6 +9,8 @@
 	<link rel="stylesheet" href="<?= base_url('assets/loginStyle.css') ?>">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 
 	<title>login page</title>
 
