@@ -16,7 +16,7 @@ class Users_model extends CI_Model {
 
 	}
 
-	public function check_email($email){
+	public function email_exist($email){
 		return $this->db->get_where('users', array('email' => $email))->num_rows()>0;
 	}
 	public function get_user($id){

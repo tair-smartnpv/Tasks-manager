@@ -72,9 +72,18 @@
 				success: function (response) {
 					console.log("post ", response.status, response.message);
 					if (response.status === "success") {
+
+						sessionStorage.setItem('login_msg','משתמש נוסף בהצלחה')
 						window.location.href = 'Login';
 					}
 					if (response.status === "error") {
+
+						if(response.message ==='email already exist'){
+							sessionStorage.setItem('login_msg','משתמש קיים. אתה יכול להתחבר')
+							window.location.href='Login';
+						}
+
+
 						if (response.message.name) {
 							$("#error-name").html(response.message.name);
 						}

@@ -3,6 +3,7 @@
 <head>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<?= base_url('assets/loginStyle.css') ?>">
@@ -15,6 +16,9 @@
 
 
 <body>
+
+
+
 
 <div class="wrapper">
 	<div class="header">
@@ -40,8 +44,31 @@
 	</div>
 </div>
 
+<div class="modal fade" id="messageModal" tabindex="1"   aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="messageModalLabel">message</h1>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script>
-	$(document).ready(function () {
+	document.addEventListener('DOMContentLoaded', function(){
+		let msg = sessionStorage.getItem('login_msg');
+		console.log(msg)
+		if(msg){
+			document.getElementById('messageModalLabel').innerText = msg;
+			let myModal = new bootstrap.Modal(document.getElementById('messageModal'));
+			myModal.show();
+			sessionStorage.removeItem('login_msg'); // מנקה אחרי הצגה
+		}})
+
+		$(document).ready(function () {
 
 		$("#login").on("click", function () {
 

@@ -5,6 +5,9 @@ html, body {
 	/*background: linear-gradient(135deg, rgba(255, 251, 251, 0.53), rgba(255, 253, 253, 0.6));*/
 	color: #e8dbdb;
 }
+ .modal-title{
+	color: black;
+}
 
 .wrapper {
 	width: 400px;
