@@ -51,7 +51,7 @@
 /*display: none*/
 	color:  rgba(220, 220, 220, 0.58);
 }
- .task {
+ /* .task {
     background: #f8f8f8;
     /*padding: 12px 16px;*/
     /*border-radius: 10px;*/
@@ -59,25 +59,39 @@
     /*margin-bottom: 15px;*/
 
     /*display: flex;*/
-    justify-content: space-between; /* כותרת מצד ימין, כפתורים מצד שמאל */
-    align-items: center;
+    /* justify-content: space-between; /* כותרת מצד ימין, כפתורים מצד שמאל */
+    /* align-items: center; */
 	/*	 background: #ffffff;*/
-		 border-radius: 12px;
+		 /* border-radius: 12px;
 		 padding: 1% 2%;
 		 box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-		 display: flex;
+		 display: flex; */ 
 		 /*align-items: flex-start;*/
 		 /*gap: 15px;*/
 		 /*position: relative;*/
 
-}
- .task h4{
+/* } */ 
+ /* .task h4{
 	 /*font-size: ;*/
- }
+ /* } */ 
  /*.task.completed h3{*/
 	/* text-decoration: line-through;*/
 	/* color:  gray;*/
  /*}*/
+
+.task {
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    font-family: sans-serif;
+}
 
 
  .delete-btn{
@@ -91,6 +105,9 @@ h4{
 	font-weight: normal;
 }
 
+.task-status {
+    transform: scale(1.2);
+}
 
 .modal-body{
 	/*align-items: center;*/
