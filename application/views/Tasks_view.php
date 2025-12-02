@@ -9,7 +9,8 @@
 	<link rel="stylesheet" href="<?= base_url('assets/tasksStyle.css') ?>">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<script>	let project_uuid = "<?php echo $project_uuid; ?>";
+</script>
 	<style></style>
 </head>
 
@@ -22,15 +23,19 @@
 		<div>
 			<h1 class="display-6">פרויקט: <?= $project->name ?> </h1>
 			<hr class="my-4">
+<!--			data-id="${project.uuid} data-id="${project.uuid}""-->
+
 
 			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-modal">
-				הוסף משימה
+				הוספת משימה
 			</button>
+			<button type="button"  class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#share-project">שיתוף הפרויקט</button><!--only if is the created by user id-->
+			<button type="button"   class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-project">מחיקת הפרויקט</button>
 
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="add-modal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="add-modal" tabindex="-1"  >
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -51,6 +56,39 @@
 	</div>
 </div>
 
+<div class="modal fade" id="delete-project" tabindex="-1" >
+	<div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3>למחוק את הפרויקט?</h3>
+			</div>
+			<div class="modal-footer">
+				<button id="deleteProject-btn" class="btn btn-danger">מחיקה</button>
+				<button class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="share-project" tabindex="-1">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5>שיתוף הפרויקט</h5>
+			</div>
+			<div class="modal-body">
+				<div id="share-error-box" class="text-danger mt-2"></div>
+				<label>בחירת משתמש לשיתוף הפרויקט:</label><br>
+				<input type="email" id="email-input">
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" id="shareProject-btn">שיתוף</button>
+				<button class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+			</div>
+		</div>
+
+	</div>
+</div>
 <div class="modal fade" id="edit-modal">
 	<div class="modal-dialog" role="dialog">
 		<div class="modal-content">
@@ -64,7 +102,7 @@
 				<input type="date" id="date-update" min="<?php echo date('Y-m-d'); ?>">
 			</div>
 			<div class="modal-footer">
-				<button id="edit-task">עדכן</button>
+				<button id="edit-task">עידכון</button>
 			</div>
 		</div>
 	</div>
@@ -96,10 +134,9 @@
 <div class="tasks-list">
 	<h3>משימות שסיימתי: (<span id="completed-count"></span>)</h3>
 	<ul id="completed-tasks"></ul>
-</div>
 
 <script>
-	let project_uuid = "<?php echo $project_uuid; ?>";
+
 
 	function updateCounters() {
 
@@ -329,6 +366,54 @@
 			})
 
 		})
+
+		$('#deleteProject-btn').on("click",function (){
+			// const project_id = project_uuid;
+			console.log(project_uuid)
+			$.ajax({
+				url: '<?php echo site_url("Projects/delete")?>',
+				method: 'POST',
+				// dataType: 'json',
+				data: {
+					uuid: project_uuid
+				},
+				success: function(){
+					window.location.href = '<?php echo site_url("Projects")?>';
+				},
+				error: function (){
+					console.log("error")
+				}
+			})
+		})
+		$("#shareProject-btn").on("click",function () {
+			const email = $('#email-input').val();
+			console.log(email);
+			const id = project_uuid;
+
+			$.ajax({
+				url:"<?php echo site_url('Projects/share_project')?>",
+				method:'POST',
+				dataType: 'JSON',
+				data:{
+					project_id : id,
+					email:email
+				},
+				success: function (res){
+					if(res.status ==='error'){
+						$("#share-error-box").html(res.message).show();
+					}
+					if(res.status==='success'){
+						alert(res.message);
+						$("#share-project").modal("hide");
+						$('#email-input').val('');
+						$('#share-error-box').hide();
+					}
+				}
+			})
+		})
+
+
+
 
 
 	})

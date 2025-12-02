@@ -45,7 +45,7 @@
 				<div id="error-box" class="text-danger mt-2"></div>
 				<label>שם פרויקט:</label><br>
 				<input type="text" id="name-input" required><br>
-				<label>הוסף תיאור:</label><br>
+				<label>הוספת תיאור:</label><br>
 				<input type="text" id="desc-input">
 
 
@@ -106,15 +106,23 @@
 
 <script>
 	function renderProject(project) {
+
+		let id = project.uuid;
+		let name = project.name;
+		let description  = project.description;
+		let tasks = project.total_tasks;
+		let completed = project.completed_tasks;
 		return `
 		
-        <div class="project" id="project-${project.uuid}">
+        <div class="project" id="project-${id}">
 		<button class="share-btn" data-id="${project.uuid}">שתף</button>
 
             <h2>${project.name}</h2>
 				<p> ${project.description}</p>
-				
+		<lable> הושלמו ${completed} מתוך ${tasks} משימות<label/>
+		
 <div class="progress">
+<lable id="progressData-${id}"></lable>
   <div id="progress-${project.uuid}" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 <div class = "project-btn">
@@ -130,6 +138,7 @@
 		console.log(total, completed)
 		$("#progress-" + projectID).css("width", percent + "%");
 		$("#progress-" + projectID).attr("aria-valuenow", percent);
+		// $('#progressData-'+ projectID).val(precent);
 	}
 
 	function askConfirmation() {
