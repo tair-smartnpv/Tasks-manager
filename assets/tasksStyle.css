@@ -51,33 +51,6 @@
 /*display: none*/
 	color:  rgba(220, 220, 220, 0.58);
 }
- /* .task {
-    background: #f8f8f8;
-    /*padding: 12px 16px;*/
-    /*border-radius: 10px;*/
-    /*border: 1px solid #ddd;*/
-    /*margin-bottom: 15px;*/
-
-    /*display: flex;*/
-    /* justify-content: space-between; /* כותרת מצד ימין, כפתורים מצד שמאל */
-    /* align-items: center; */
-	/*	 background: #ffffff;*/
-		 /* border-radius: 12px;
-		 padding: 1% 2%;
-		 box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-		 display: flex; */ 
-		 /*align-items: flex-start;*/
-		 /*gap: 15px;*/
-		 /*position: relative;*/
-
-/* } */ 
- /* .task h4{
-	 /*font-size: ;*/
- /* } */ 
- /*.task.completed h3{*/
-	/* text-decoration: line-through;*/
-	/* color:  gray;*/
- /*}*/
 
 .task {
     background: #f8f8f8;

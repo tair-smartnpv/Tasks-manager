@@ -53,47 +53,47 @@ class APIUsers extends RestController
 		}
 	}
 
-	public function post_user_post()
-	{
-		$name = $this->post('name');
-		$email = $this->post('email');
-		$password = $this->post('password');
-		if ($name === null || $email === null || $password === null) {
-			$this->response(array('status' => 'error', 'error' => 'Please fill all fields'), RestController::HTTP_BAD_REQUEST);
-		} else {
-			$data = array('name' => $name, 'email' => $email, 'password' => $password);
-			$this->form_validation->set_data($data);
+	// public function post_user_post()
+	// {
+	// 	$name = $this->post('name');
+	// 	$email = $this->post('email');
+	// 	$password = $this->post('password');
+	// 	if ($name === null || $email === null || $password === null) {
+	// 		$this->response(array('status' => 'error', 'error' => 'Please fill all fields'), RestController::HTTP_BAD_REQUEST);
+	// 	} else {
+	// 		$data = array('name' => $name, 'email' => $email, 'password' => $password);
+	// 		$this->form_validation->set_data($data);
 
-			$this->form_validation->set_rules('name', 'Name', 'required', array('required' => 'חסר שם.'));;
-			$this->form_validation->set_rules('email', 'Email', 'required|valid_email|callback_unique_email',
-				array('required' => 'חסר אימייל',
-					'valid_email' => 'כתובת לא חוקית')
-			);
-			$this->form_validation->set_rules(
-				'password',
-				'Password',
-				'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*\d).+$/]',
+	// 		$this->form_validation->set_rules('name', 'Name', 'required', array('required' => 'חסר שם.'));;
+	// 		$this->form_validation->set_rules('email', 'Email', 'required|valid_email|callback_unique_email',
+	// 			array('required' => 'חסר אימייל',
+	// 				'valid_email' => 'כתובת לא חוקית')
+	// 		);
+	// 		$this->form_validation->set_rules(
+	// 			'password',
+	// 			'Password',
+	// 			'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*\d).+$/]',
 
-				array('required' => 'חסר סיסמא',
-					'min_length' => 'הסיסמא חייבת להכי לפחות 8 תווים',
-					'regex_match' => 'הסיסמא חייבת להכיל אותיות ומספרים')
-			);
+	// 			array('required' => 'חסר סיסמא',
+	// 				'min_length' => 'הסיסמא חייבת להכי לפחות 8 תווים',
+	// 				'regex_match' => 'הסיסמא חייבת להכיל אותיות ומספרים')
+	// 		);
 
-			if ($this->form_validation->run() == FALSE) {
-				$this->response(array('code' => 422, 'status' => 'error', 'error' => validation_errors()), 422);
-				return;
-			} else {
-				$id = $this->Users_model->add_user($name, $password, $email);
-				$key = $this->ApiKeys_model->add_user($id);
-				log_message('DEBUG', $name . $email . $password);
-				$this->response(array('code' => 200,
-					'status' => 'success', 'message' => 'User created successfully.', 'data' => array(
-						'name' => $name, 'email' => $email, 'key' => $key)), RestController::HTTP_CREATED);
-			}
+	// 		if ($this->form_validation->run() == FALSE) {
+	// 			$this->response(array('code' => 422, 'status' => 'error', 'error' => validation_errors()), 422);
+	// 			return;
+	// 		} else {
+	// 			$id = $this->Users_model->add_user($name, $password, $email);
+	// 			$key = $this->ApiKeys_model->add_user($id);
+	// 			log_message('DEBUG', $name . $email . $password);
+	// 			$this->response(array('code' => 200,
+	// 				'status' => 'success', 'message' => 'User created successfully.', 'data' => array(
+	// 					'name' => $name, 'email' => $email, 'key' => $key)), RestController::HTTP_CREATED);
+	// 		}
 
-		}
+	// 	}
 
-	}
+	// }
 
 	public function patch_user_patch()
 	{

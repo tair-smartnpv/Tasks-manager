@@ -30,7 +30,7 @@
 	background: #f3fbfd;
 	padding: 8px 15px;
 	border-radius: 10px;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	font-size: larger;
 	/*font-weight: bold;*/
 }
@@ -67,7 +67,7 @@
 
 
 .project-list {
-	padding: 3% ;
+	padding: 3%;
 	display: flex;
 	gap: 2%;
 	flex-wrap: wrap;
@@ -82,6 +82,7 @@
 	border-radius: 10px;
 	flex-direction: column;
 	display: flex;
+	position: relative;
 
 }
 
@@ -112,11 +113,23 @@
 
 }
 
-.progress{
+.share-btn {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	border-radius: 10px;
+	border: 1px solid #006eff;
+	color: #006eff;
+	background: white;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.progress {
 	margin-bottom: 10px;
 }
 
-.modal-header{
+.modal-header {
 	direction: rtl;
 	display: flex;
 	justify-content: space-between;
@@ -124,16 +137,16 @@
 
 }
 
-.modal-body{
+.modal-body {
 	/*align-items: center;*/
 	display: grid;
 	margin: auto;
 }
-.modal-body label{
 
-}
+.modal-body label {}
 
-.modal-body input{
-	background-color: #ffffff;;
+.modal-body input {
+	background-color: #ffffff;
+	;
 	border-radius: 5px;
 }

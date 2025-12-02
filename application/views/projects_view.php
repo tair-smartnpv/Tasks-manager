@@ -76,22 +76,51 @@
 
 </div>
 
+<div class="modal fade" id="share-modal" tabindex="-1" role="dialog"
+	 aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">שיתוף הפרוייקט</h5>
+			</div>
+			<div class="modal-body">
+				<div id="share-error-box" class="text-danger mt-2"></div>
+				<lable>בחר משתמש לשתף איתו את הפרויקט</lable><br>
+				<input type="email" id="email-input">
+
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" id="confirmShare">שתף</button>
+				<button class="btn btn-secondary" data-bs-dismiss="modal">בטל</button>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
+
+
 <div class="project-list " id="project-list"></div>
 
 
 <script>
 	function renderProject(project) {
 		return `
+		
         <div class="project" id="project-${project.uuid}">
+		<button class="share-btn" data-id="${project.uuid}">שתף</button>
+
             <h2>${project.name}</h2>
 				<p> ${project.description}</p>
-
+				
 <div class="progress">
   <div id="progress-${project.uuid}" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 <div class = "project-btn">
  		<a href='tasks/index/${project.uuid}' class='btn btn-primary'>משימות</a>
 <button class="delete-btn" data-id="${project.uuid}">מחק</button>
+
       </div>  </div>
     `;
 	}
@@ -130,7 +159,7 @@
 				// console.log("hello")
 				let projects = JSON.parse(response)
 				for (let i = 0; i < projects.length; i++) {
-					let projectID = projects[i].id;
+					let projectID = projects[i].uuid;
 					let total = projects[i].total_tasks;
 					let completed = projects[i].completed_tasks;
 
@@ -210,6 +239,48 @@
 
 			})
 		})
+
+		$(document).on("click",".share-btn",  function(){
+			const projectId = $(this).data('id');
+			$("#share-modal").data('id',projectId)
+			$("#share-modal").modal("show");
+
+		})
+
+		$("#confirmShare").on("click", function(){
+			const email = $('#email-input').val();
+			console.log(email);
+			const id = $('#share-modal').data('id');
+			console.log(id);
+
+			$.ajax({
+				url: '<?php echo site_url('Projects/share_project')?>',
+				method: 'POST',
+				dataType: 'JSON',
+				data:{
+					project_id: id,
+					email: email
+				},
+				success: function(res){
+					console.log(res);
+					if(res.status ==='error'){
+						console.log(res.message);
+						$("#share-error-box").html(res.message).show();
+					}
+					if(res.status === 'success'){
+						console.log(res.message);
+						alert(res.message);
+						$("#share-modal").modal("hide");
+						$('#email-input').val('');
+						$("#share-error-box").hide();
+					}
+				}
+
+			})
+			
+			
+		})
+
 
 		$('#logout').on("click", function () {
 			$.ajax({

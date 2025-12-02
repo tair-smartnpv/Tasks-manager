@@ -36,6 +36,7 @@ class Login extends CI_Controller
 		} else {
 			$email = $this->input->post('email');
 			$pass = $this->input->post('password');
+			log_message('ERROR','This user cannot load');
 
 			//login succeed
 			if (!$this->Users_model->user_exists($email)) {

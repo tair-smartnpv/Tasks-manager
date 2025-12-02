@@ -15,6 +15,7 @@ class projects extends CI_Controller
 		$this->load->model('Projects_model');
 		$this->load->helper('url');
 		$this->load->model('Tasks_model');
+		$this->load->model('Users_model');
 		$this->load->helper(array('form', 'url'));
 
 		$this->load->library('form_validation');
@@ -48,7 +49,7 @@ class projects extends CI_Controller
 	{
 		$projects = $this->Projects_model->get_projects_by_user($_SESSION['user_id']);
 		foreach ($projects as $project) {
-			$progress = $this->Projects_model->count_tasks($project->id);
+			$progress = $this->Projects_model->count_tasks($project->uuid);
 			$total = $progress['total'];
 			$completed = $progress['completed'];
 			$project->total_tasks = $total;
@@ -99,7 +100,27 @@ class projects extends CI_Controller
 	}
 
 
+	public function share_project(){
+		
+		$project_uuid = $this->input->post('project_id');
+		$email = $this->input->post('email');
+		log_message('DEBUG','project: '. $project_uuid .'email: '. $email);
+		$project_id = $this->Projects_model->get_project_id($project_uuid); 
+		$user = $this->Users_model->get_user_by_email($email);
+		if(!$user){
+			echo json_encode(array('status'=> 'error','message'=>'משתמש לא נמצא'));
 
+		}
+		else{
+			if($this->Projects_model->check_if_shared($project_id, $user->user_id)){
+				echo json_encode(array('status'=>'error','message'=>'הפרויקט כבר משותף עם משתמש זה'));
+			}
+			else{
+				$this->Projects_model->share_project($project_id, $user->user_id);
+				echo json_encode(array('status'=>'success','message'=>'הפרויקט שותף בהצלחה'));
+			}
+		}
+	}
 	public function delete()
 	{
 		$uuid = $this->input->post('uuid');

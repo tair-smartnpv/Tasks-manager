@@ -18,8 +18,8 @@ class Projects_model extends CI_Model
 	public function get_projects_by_user($user_id)
 	{
 
-//		$this->db->select('name, description,created_at,uuid');
-		$this->db->select('*');
+		$this->db->select('name, projects.description, projects.created_at, projects.uuid');
+		// $this->db->select('*');
 		$this->db->from('projects');
 		$this->db->join('users_projects', 'projects.id = users_projects.project_id');
 		$this->db->where(array('users_projects.user_id'=> $user_id, 'projects.is_deleted' => 0));
@@ -99,8 +99,18 @@ class Projects_model extends CI_Model
 
 	}
 
-	public function count_tasks($id)
+	public function share_project($project_id, $user_id){
+		$this->db->insert('users_projects', array('user_id'=>$user_id,'project_id'=>$project_id));
+		}
+
+	public function check_if_shared($project_id, $user_id){
+		$query = $this->db->get_where('users_projects', array('project_id' => $project_id, 'user_id' => $user_id));
+		return $query->num_rows() > 0;
+	}
+
+	public function count_tasks($uuid)
 	{
+		$id = $this->get_project_id( $uuid );
 		$total = $this->db->where('project_id', $id)->count_all_results('tasks');;
 		log_message('debug', $total);
 		$completed = $this->db->where(
